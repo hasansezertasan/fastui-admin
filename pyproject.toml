@@ -29,7 +29,7 @@ classifiers = [
     "Framework :: Pydantic :: 2",
     "Framework :: FastAPI",
 ]
-dependencies = ["pydantic[email]>=2.5.2"]
+dependencies = ["pydantic[email]>=2.5.2", "fastui>=0.3.0"]
 
 [project.urls]
 Documentation = "https://github.com/hasansezertasan/fastui-admin#readme"
