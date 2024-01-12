@@ -47,63 +47,76 @@ dependencies = ["fastui>=0.4.0"]
 Documentation = "https://github.com/hasansezertasan/fastui-admin#readme"
 Issues = "https://github.com/hasansezertasan/fastui-admin/issues"
 Source = "https://github.com/hasansezertasan/fastui-admin"
-
-[project.optional-dependencies]
-fastapi = [
-    "fastapi>=0.104",
-    "python-multipart>=0.0.6",
-]
-
+Changelog = "https://hasansezertasan.github.io/fastui-admin/changelog"
 
 [tool.hatch.version]
 path = "src/fastui_admin/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
-  "coverage[toml]>=6.5",
-  "pytest",
+  "coverage[toml]>=7.0.0, <7.5.0",
+  "pytest>=7.0.0, <7.4.0",
+  "pre-commit>=3.6.0, <4.0.0",
+  "fastapi[all]>=0.100",
+  "SQLAlchemy-Utils>=0.40.0, <0.42.0",
+  "SQLAlchemy-Mixins>=2.0.5",
+  "SQLalchemy[aiosqlite, asyncio]>=2.0.0, <3.0.0",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
 test-cov = "coverage run -m pytest {args:tests}"
-cov-report = [
-  "- coverage combine",
-  "coverage report",
-]
-cov = [
-  "test-cov",
-  "cov-report",
-]
+cov-report = ["- coverage combine", "coverage report"]
+cov = ["test-cov", "cov-report"]
+pre = "pre-commit run --all-files --hook-stage manual --show-diff-on-failure"
+run = "uvicorn playground.main:app --host 0.0.0.0 --port 5000 --workers 2 --reload"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = [
-  "black>=23.1.0",
-  "mypy>=1.0.0",
-  "ruff>=0.0.243",
-]
+dependencies = ["black>=23.12.1", "mypy>=1.8.0", "ruff>=0.1.9", "isort>=5.13.2"]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/fastui_admin tests}"
-style = [
-  "ruff {args:.}",
-  "black --check --diff {args:.}",
+sort = "isort --profile black {args:.}"
+style = ["ruff {args:.}", "black --check --diff {args:.}"]
+fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
+all = ["style", "typing"]
+
+[tool.hatch.envs.docs]
+detached = true
+dependencies = [
+  "mkdocs>=1.4.2, <2.0.0",
+  "mkdocs-material>=9.0.0, <10.0.0",
+  "mkdocstrings[python]>=0.19.0, <0.24.0",
+  "mkdocs-static-i18n>=0.53.0, <0.57.0",
 ]
-fmt = [
-  "black {args:.}",
-  "ruff --fix {args:.}",
-  "style",
-]
-all = [
-  "style",
-  "typing",
-]
+[tool.hatch.envs.docs.scripts]
+build = "mkdocs build"
+serve = "mkdocs serve --dev-addr localhost:8080"
+deploy = "mkdocs gh-deploy --force"
 
 [tool.black]
-target-version = ["py37"]
+target-version = ['py37', 'py38', 'py39', 'py310', 'py311']
 line-length = 120
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.nox
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | alembic
+  )/
+)
+'''
 skip-string-normalization = true
 
 [tool.ruff]
@@ -142,9 +155,15 @@ ignore = [
   # Allow boolean positional values in function calls, like `dict.get(... True)`
   "FBT003",
   # Ignore checks for possible passwords
-  "S105", "S106", "S107",
+  "S105",
+  "S106",
+  "S107",
   # Ignore complexity
-  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
 ]
 unfixable = [
   # Don't touch unused imports
@@ -165,17 +184,11 @@ ban-relative-imports = "all"
 source_pkgs = ["fastui_admin", "tests"]
 branch = true
 parallel = true
-omit = [
-  "src/fastui_admin/__about__.py",
-]
+omit = ["src/fastui_admin/__about__.py"]
 
 [tool.coverage.paths]
 fastui_admin = ["src/fastui_admin", "*/fastui-admin/src/fastui_admin"]
 tests = ["tests", "*/fastui-admin/tests"]
 
 [tool.coverage.report]
-exclude_lines = [
-  "no cov",
-  "if __name__ == .__main__.:",
-  "if TYPE_CHECKING:",
-]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
