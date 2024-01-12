@@ -17,6 +17,7 @@ keywords = [
   "sqlalchemy",
   "dashboard",
 ]
+authors = [{ name = "Hasan Sezer Taşan", email = "hasansezertasan@gmail.com" }]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Topic :: Internet",
