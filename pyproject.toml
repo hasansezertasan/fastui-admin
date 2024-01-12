@@ -9,9 +9,13 @@ description = 'Build better Admin UIs faster.'
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
-keywords = []
-authors = [
-  { name = "Hasan Sezer Taşan", email = "hasansezertasan@gmail.com" },
+keywords = [
+  "fastapi",
+  "fastui",
+  "starlette",
+  "admin",
+  "sqlalchemy",
+  "dashboard",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
