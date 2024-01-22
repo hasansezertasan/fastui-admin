@@ -13,21 +13,21 @@ repos:
       - id: check-added-large-files
   # https://pycqa.github.io/isort/docs/configuration/pre-commit.html
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.1
+    rev: 5.13.2
     hooks:
       - id: isort
         name: isort (python)
         files: "\\.(py)$"
         args: [--settings-path=pyproject.toml]
   - repo: https://github.com/psf/black
-    rev: 23.11.0
+    rev: 23.12.1
     hooks:
       - id: black
         language_version: python3.11
         args: [--config=pyproject.toml]
   # Check compliance with Ruff.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.7
+    rev: v0.1.14
     hooks:
       - id: ruff
         name: ruff (python)
