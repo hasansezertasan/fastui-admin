@@ -24,6 +24,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
   "License :: OSI Approved :: MIT License",
   "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
   "Operating System :: OS Independent",
   "Typing :: Typed",
   'Environment :: Web Environment',
@@ -36,8 +37,6 @@ classifiers = [
   'Programming Language :: Python :: 3.12',
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
-  "Intended Audience :: Developers",
-  "Intended Audience :: Information Technology",
   "Framework :: Pydantic :: 2",
   "Framework :: FastAPI",
 ]
