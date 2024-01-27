@@ -70,7 +70,7 @@ pre = "pre-commit run --all-files --hook-stage manual --show-diff-on-failure"
 run = "uvicorn playground.main:app --host 0.0.0.0 --port 5000 --workers 2 --reload"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11"]
+python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.lint]
 detached = true
