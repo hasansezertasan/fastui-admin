@@ -20,14 +20,14 @@ repos:
         files: "\\.(py)$"
         args: [--settings-path=pyproject.toml]
   - repo: https://github.com/psf/black
-    rev: 23.12.1
+    rev: 24.3.0
     hooks:
       - id: black
         language_version: python3.11
         args: [--config=pyproject.toml]
   # Check compliance with Ruff.
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.14
+    rev: v0.3.3
     hooks:
       - id: ruff
         name: ruff (python)
