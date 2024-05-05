@@ -1,3 +1,5 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
 exclude: ^(\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist|alembic)/
 default_language_version:
   python: python3.11
@@ -5,30 +7,35 @@ default_stages: [pre-commit, pre-push]
 repos:
   # https://github.com/pre-commit/pre-commit-hooks#pre-commit-hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
-      - id: check-yaml
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
       - id: check-added-large-files
-  # https://pycqa.github.io/isort/docs/configuration/pre-commit.html
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        name: isort (python)
-        files: "\\.(py)$"
-        args: [--settings-path=pyproject.toml]
-  - repo: https://github.com/psf/black
-    rev: 24.3.0
-    hooks:
-      - id: black
-        language_version: python3.11
-        args: [--config=pyproject.toml]
-  # Check compliance with Ruff.
+        name: Check added large files
+      - id: check-toml
+        name: Check TOML
+      - id: check-yaml
+        name: Check YAML
+      - id: check-json
+        name: Check JSON
+      - id: end-of-file-fixer
+        name: End of file fixer
+      - id: trailing-whitespace
+        name: Trailing whitespace
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.3
+    rev: v0.4.3
     hooks:
       - id: ruff
-        name: ruff (python)
-        args : [--config=pyproject.toml]
+        name: Ruff Linter
+        types_or: [python, pyi, jupyter]
+        args: [--config=pyproject.toml]
+      - id: ruff-format
+        name: Ruff Formatter
+        types_or: [python, pyi, jupyter]
+        args: [--config=pyproject.toml]
+  # Uses [mvdan/sh](https://github.com/mvdan/sh)
+  - repo: https://github.com/scop/pre-commit-shfmt
+    rev: v3.8.0-1
+    hooks:
+      - id: shfmt
+        name: Shfmt Formatter for Shell Scripts
+        args: ["-l", "-w", "scripts/"]
