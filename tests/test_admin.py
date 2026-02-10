@@ -183,26 +183,27 @@ class TestReadOnlyModelView:
         resp = await ro_client.get("/admin/api/users/")
         assert resp.status_code == 200
 
-    async def test_create_route_missing(self, ro_client):
-        resp = await ro_client.get("/admin/api/users/create")
-        # Route not registered — should not return a JSON API form response
-        content_type = resp.headers.get("content-type", "")
-        if "application/json" in content_type:
-            # If JSON is returned, it must not contain a form component
-            body = resp.text
-            assert "ModelForm" not in body
-        else:
-            assert resp.status_code in (404, 405) or "text/html" in content_type
+    def test_create_route_not_registered(self, readonly_app):
+        """Verify the create API route is not in the registered routes."""
+        admin_mount = None
+        for route in readonly_app.routes:
+            if hasattr(route, "name") and route.name == "admin":
+                admin_mount = route
+                break
+        assert admin_mount is not None
+        route_names = [r.name for r in admin_mount.app.routes if hasattr(r, "name")]
+        assert "ReadOnlyUsers_create_api" not in route_names
 
-    async def test_delete_route_missing(self, ro_client):
-        resp = await ro_client.post("/admin/api/users/1/delete")
-        # Route not registered — should not return a JSON redirect response
-        content_type = resp.headers.get("content-type", "")
-        if "application/json" in content_type:
-            body = resp.text
-            assert "FireEvent" not in body
-        else:
-            assert resp.status_code in (404, 405) or "text/html" in content_type
+    def test_delete_route_not_registered(self, readonly_app):
+        """Verify the delete API route is not in the registered routes."""
+        admin_mount = None
+        for route in readonly_app.routes:
+            if hasattr(route, "name") and route.name == "admin":
+                admin_mount = route
+                break
+        assert admin_mount is not None
+        route_names = [r.name for r in admin_mount.app.routes if hasattr(r, "name")]
+        assert "ReadOnlyUsers_delete_api" not in route_names
 
 
 class TestCustomBaseView:

@@ -64,7 +64,7 @@ class BaseView:
 
     def get_url(self) -> str:
         """Get the URL for this view."""
-        return f"{self._admin.base_url}/{self.name.lower()}"
+        return f"{self._admin.base_url}/{self.name.lower().replace(' ', '-')}"
 
     async def render(self, request: Request) -> List[c.AnyComponent]:  # noqa: ARG002
         """Render view components. Override in subclasses."""
@@ -193,7 +193,6 @@ class BaseModelView(BaseView):
             self._form_model = sqlalchemy_to_pydantic(
                 self.model,
                 include_columns=columns,
-                for_form=True,
             )
         return self._form_model
 
@@ -326,7 +325,7 @@ class BaseModelView(BaseView):
     async def _list_api(self, request: Request) -> JSONResponse:
         """API endpoint returning list view components."""
         try:
-            page = int(request.query_params.get("page", 1))
+            page = max(1, int(request.query_params.get("page", 1)))
         except (ValueError, TypeError):
             page = 1
         page_size = self.page_size
@@ -424,12 +423,11 @@ class BaseModelView(BaseView):
             )
 
         if self.can_delete:
-            table_name = getattr(self.model, "__tablename__", self.model.__name__.lower())
             # Use a form to POST to the delete endpoint
             action_components.append(
                 c.ModelForm(
                     model=_DeleteConfirmModel,
-                    submit_url=f"/{table_name}/{pk}/delete",
+                    submit_url=f"./{pk}/delete",
                     method="POST",
                     footer=[
                         c.Button(text="Delete", class_name="btn btn-danger"),

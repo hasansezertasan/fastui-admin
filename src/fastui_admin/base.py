@@ -71,15 +71,12 @@ class BaseAdmin:
             debug: Enable debug mode.
         """
         if engine is None and session_maker is None:
-            import warnings  # noqa: PLC0415
-
-            warnings.warn(
+            msg = (
                 "Neither engine nor session_maker provided. "
-                "Database-backed views will fail at runtime. "
-                "Pass an async engine or session_maker to BaseAdmin.",
-                UserWarning,
-                stacklevel=2,
+                "All database-backed model views will raise RuntimeError. "
+                "Pass an async engine or session_maker to BaseAdmin."
             )
+            raise TypeError(msg)
 
         if session_maker is not None:
             self._validate_session_maker(session_maker)
@@ -240,7 +237,7 @@ class BaseAdmin:
         for view in self._views:
             if isinstance(view, (AdminIndexView, BaseModelView)):
                 continue
-            view_slug = view.name.lower()
+            view_slug = view.name.lower().replace(" ", "-")
             routes.append(Route(f"/{view_slug}/", endpoint=self._make_view_html(view), name=f"{view.name}_html"))
             routes.append(Route(f"/api/{view_slug}/", endpoint=self._make_view_api(view), name=f"{view.name}_api"))
 
@@ -275,7 +272,7 @@ class BaseAdmin:
         )
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
-    def _make_view_html(self, view: "BaseView"):  # noqa: ANN202
+    def _make_view_html(self, view: "BaseView"):
         """Create an HTML endpoint for a plain BaseView."""
 
         async def endpoint(request: Request) -> HTMLResponse:  # noqa: ARG001
@@ -288,7 +285,7 @@ class BaseAdmin:
 
         return endpoint
 
-    def _make_view_api(self, view: "BaseView"):  # noqa: ANN202
+    def _make_view_api(self, view: "BaseView"):
         """Create an API endpoint for a plain BaseView."""
 
         async def endpoint(request: Request) -> JSONResponse:
