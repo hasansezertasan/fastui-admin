@@ -258,8 +258,10 @@ class BaseModelView(BaseView):
 
         return routes
 
-    def _error_response(self, message: str, back_url: str = "../") -> JSONResponse:
+    def _error_response(self, message: str, back_url: Optional[str] = None) -> JSONResponse:
         """Return a JSON response rendering an error page in the admin UI."""
+        if back_url is None:
+            back_url = f"{self.get_url()}/"
         components = self._admin.layout.render(
             c.Heading(text="Error", level=2),
             c.Paragraph(text=message),
@@ -408,7 +410,7 @@ class BaseModelView(BaseView):
         action_components: List[c.AnyComponent] = [
             c.Link(
                 components=[c.Text(text="← Back to List")],
-                on_click=GoToEvent(url="../"),
+                on_click=GoToEvent(url=f"{self.get_url()}/"),
                 class_name="btn btn-secondary me-2",
             )
         ]
@@ -453,7 +455,7 @@ class BaseModelView(BaseView):
                 c.Heading(text=f"Create {self.name}", level=2),
                 c.Link(
                     components=[c.Text(text="← Back to List")],
-                    on_click=GoToEvent(url="../"),
+                    on_click=GoToEvent(url=f"{self.get_url()}/"),
                     class_name="btn btn-secondary mb-3",
                 ),
                 c.ModelForm(
@@ -490,7 +492,7 @@ class BaseModelView(BaseView):
                 )
 
         # Return redirect to detail view
-        components = [c.FireEvent(event=GoToEvent(url=f"../{pk}"))]
+        components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/{pk}"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
     async def _edit_api(self, request: Request) -> JSONResponse:
@@ -550,7 +552,7 @@ class BaseModelView(BaseView):
                 )
 
         # Return redirect to detail view
-        components = [c.FireEvent(event=GoToEvent(url=f"../{pk}"))]
+        components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/{pk}"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
     async def _delete_api(self, request: Request) -> JSONResponse:
@@ -567,9 +569,9 @@ class BaseModelView(BaseView):
         except SQLAlchemyError:
             logger.exception("Error deleting %s #%s", self.name, pk)
             return self._error_response(
-                f"Failed to delete {self.name}. Check server logs for details.", back_url=f"../{pk}"
+                f"Failed to delete {self.name}. Check server logs for details.", back_url=f"{self.get_url()}/{pk}"
             )
 
         # Return redirect to list view
-        components = [c.FireEvent(event=GoToEvent(url="../"))]
+        components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])

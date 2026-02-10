@@ -10,7 +10,7 @@ import pytest
 import pytest_asyncio
 from fastapi import FastAPI
 from sqlalchemy import Boolean, DateTime, Integer, String
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from fastui_admin import BaseAdmin, BaseModelView
@@ -42,17 +42,17 @@ class UserAdmin(BaseModelView, model=User):
 
 
 @pytest.fixture()
-def engine():
+def engine() -> AsyncEngine:
     return create_async_engine("sqlite+aiosqlite://", echo=False)
 
 
 @pytest.fixture()
-def session_maker(engine):
+def session_maker(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
 @pytest_asyncio.fixture()
-async def setup_db(engine) -> AsyncGenerator:
+async def setup_db(engine: AsyncEngine) -> AsyncGenerator:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -61,7 +61,7 @@ async def setup_db(engine) -> AsyncGenerator:
 
 
 @pytest.fixture()
-def app(engine) -> FastAPI:
+def app(engine: AsyncEngine) -> FastAPI:
     fastapi_app = FastAPI()
     admin = BaseAdmin(app=fastapi_app, engine=engine, title="Test Admin")
     admin.add_view(UserAdmin)
