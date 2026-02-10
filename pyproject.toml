@@ -165,4 +165,8 @@ exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
 dev = [
     "mypy>=1.14.1",
     "pytest-cov>=5.0.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+    "aiosqlite>=0.19.0",
+    "greenlet>=3.0.0",
 ]

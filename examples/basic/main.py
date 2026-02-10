@@ -96,7 +96,7 @@ class PostAdmin(BaseModelView, model=Post):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
     """Initialize database on startup."""
     await init_db()
     yield

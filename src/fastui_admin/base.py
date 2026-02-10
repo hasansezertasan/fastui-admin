@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Core admin class for FastUI Admin."""
 
-from typing import TYPE_CHECKING, Any, List, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Callable, List, Optional, Type, Union
 
 from fastapi import FastAPI
 from starlette.applications import Starlette
@@ -234,12 +234,13 @@ class BaseAdmin:
         # Plain BaseView routes (non-index, non-model)
         from fastui_admin.views import AdminIndexView, BaseModelView  # noqa: PLC0415
 
-        for view in self._views:
-            if isinstance(view, (AdminIndexView, BaseModelView)):
+        for base_view in self._views:
+            if isinstance(base_view, (AdminIndexView, BaseModelView)):
                 continue
-            view_slug = view.name.lower().replace(" ", "-")
-            routes.append(Route(f"/{view_slug}/", endpoint=self._make_view_html(view), name=f"{view.name}_html"))
-            routes.append(Route(f"/api/{view_slug}/", endpoint=self._make_view_api(view), name=f"{view.name}_api"))
+            view_slug = base_view.name.lower().replace(" ", "-")
+            view_name = base_view.name
+            routes.append(Route(f"/{view_slug}/", endpoint=self._make_view_html(base_view), name=f"{view_name}_html"))
+            routes.append(Route(f"/api/{view_slug}/", endpoint=self._make_view_api(base_view), name=f"{view_name}_api"))
 
         # Catch-all for frontend HTML (must be last)
         routes.append(Route("/{path:path}", endpoint=self._catch_all_html, name="catch_all"))
@@ -272,7 +273,7 @@ class BaseAdmin:
         )
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
-    def _make_view_html(self, view: "BaseView"):
+    def _make_view_html(self, view: "BaseView") -> Callable[..., Any]:
         """Create an HTML endpoint for a plain BaseView."""
 
         async def endpoint(request: Request) -> HTMLResponse:  # noqa: ARG001
@@ -285,7 +286,7 @@ class BaseAdmin:
 
         return endpoint
 
-    def _make_view_api(self, view: "BaseView"):
+    def _make_view_api(self, view: "BaseView") -> Callable[..., Any]:
         """Create an API endpoint for a plain BaseView."""
 
         async def endpoint(request: Request) -> JSONResponse:
