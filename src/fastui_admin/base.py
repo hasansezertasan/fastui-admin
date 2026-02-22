@@ -12,6 +12,7 @@ from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 
 from fastui_admin.layout import MasterLayout
+from fastui_admin.utils import slugify
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Engine
@@ -234,7 +235,7 @@ class BaseAdmin:
         for base_view in self._views:
             if isinstance(base_view, (AdminIndexView, BaseModelView)):
                 continue
-            view_slug = base_view.name.lower().replace(" ", "-")
+            view_slug = slugify(base_view.name)
             view_name = base_view.name
             routes.append(Route(f"/{view_slug}/", endpoint=self._make_view_html(base_view), name=f"{view_name}_html"))
             routes.append(Route(f"/api/{view_slug}/", endpoint=self._make_view_api(base_view), name=f"{view_name}_api"))

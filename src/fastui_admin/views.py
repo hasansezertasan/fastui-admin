@@ -18,7 +18,7 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Route
 
-from fastui_admin.utils import sqlalchemy_to_pydantic
+from fastui_admin.utils import slugify, sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +64,7 @@ class BaseView:
 
     def get_url(self) -> str:
         """Get the URL for this view."""
-        return f"{self._admin.base_url}/{self.name.lower().replace(' ', '-')}"
+        return f"{self._admin.base_url}/{slugify(self.name)}"
 
     async def render(self, request: Request) -> List[c.AnyComponent]:  # noqa: ARG002
         """Render view components. Override in subclasses."""

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Utility functions for FastUI Admin."""
 
+import re
 from datetime import date, datetime, time
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Tuple, Type
@@ -39,6 +40,20 @@ SA_TYPE_MAP: Dict[Type[TypeEngine[Any]], type] = {
     Date: date,
     Time: time,
 }
+
+
+def slugify(name: str) -> str:
+    """Convert a name to a URL-safe slug.
+
+    Lowercases the name and replaces any non-alphanumeric characters with hyphens.
+
+    Examples:
+        >>> slugify("Audit Logs")
+        'audit-logs'
+        >>> slugify("My View!")
+        'my-view'
+    """
+    return re.sub(r"[^a-z0-9]+", "-", name.lower().strip()).strip("-")
 
 
 def get_python_type(sa_type: TypeEngine[Any]) -> type:

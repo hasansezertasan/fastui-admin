@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Tests for BaseAdmin and BaseModelView integration."""
 
-from typing import ClassVar, List
+from typing import Any, ClassVar, List, Set
 
 import pytest
 import pytest_asyncio
@@ -13,6 +13,20 @@ from httpx import ASGITransport, AsyncClient
 from fastui_admin import BaseAdmin, BaseModelView, BaseView
 
 from .conftest import User, UserAdmin
+
+
+def _find_component_types(data: Any) -> Set[str]:
+    """Recursively extract all component 'type' values from a FastUI JSON response."""
+    types: Set[str] = set()
+    if isinstance(data, dict):
+        if "type" in data:
+            types.add(data["type"])
+        for v in data.values():
+            types.update(_find_component_types(v))
+    elif isinstance(data, list):
+        for item in data:
+            types.update(_find_component_types(item))
+    return types
 
 
 @pytest_asyncio.fixture()
@@ -55,10 +69,20 @@ class TestListView:
         assert resp.status_code == 200
         data = resp.json()
         assert isinstance(data, list)
+        assert data
+        types = _find_component_types(data)
+        assert "Table" in types
+        assert "Pagination" in types
 
     async def test_list_api_with_data(self, seeded_client):
         resp = await seeded_client.get("/admin/api/users/")
         assert resp.status_code == 200
+        data = resp.json()
+        assert isinstance(data, list)
+        assert data
+        types = _find_component_types(data)
+        assert "Table" in types
+        assert "Pagination" in types
 
 
 class TestDetailView:
@@ -69,6 +93,12 @@ class TestDetailView:
     async def test_detail_found(self, seeded_client):
         resp = await seeded_client.get("/admin/api/users/1")
         assert resp.status_code == 200
+        data = resp.json()
+        assert isinstance(data, list)
+        assert data
+        types = _find_component_types(data)
+        assert "Details" in types
+        assert "Heading" in types
 
 
 class TestCreateView:
@@ -92,6 +122,26 @@ class TestCreateView:
         # Should return 400 with error message (unique constraint violation)
         assert resp.status_code == 400
 
+    async def test_create_validation_error_missing_fields(self, client):
+        """Missing required fields return a 400 error response."""
+        resp = await client.post(
+            "/admin/api/users/create",
+            json={"email": "no-username@example.com", "is_active": True},
+        )
+        assert resp.status_code == 400
+        data = resp.json()
+        assert isinstance(data, list)
+
+    async def test_create_validation_error_invalid_types(self, client):
+        """Invalid field types return a 400 error response."""
+        resp = await client.post(
+            "/admin/api/users/create",
+            json={"username": "bad-types", "email": "bad@example.com", "is_active": "not-a-bool"},
+        )
+        assert resp.status_code == 400
+        data = resp.json()
+        assert isinstance(data, list)
+
 
 class TestEditView:
     async def test_edit_form(self, seeded_client):
@@ -108,6 +158,26 @@ class TestEditView:
     async def test_edit_not_found(self, client):
         resp = await client.get("/admin/api/users/999/edit")
         assert resp.status_code == 404
+
+    async def test_edit_validation_error_missing_fields(self, seeded_client):
+        """Missing required fields return a 400 error response."""
+        resp = await seeded_client.post(
+            "/admin/api/users/1/edit",
+            json={"email": "no-username@example.com", "is_active": True},
+        )
+        assert resp.status_code == 400
+        data = resp.json()
+        assert isinstance(data, list)
+
+    async def test_edit_validation_error_invalid_types(self, seeded_client):
+        """Invalid field types return a 400 error response."""
+        resp = await seeded_client.post(
+            "/admin/api/users/1/edit",
+            json={"username": "alice", "email": "alice@example.com", "is_active": "not-a-bool"},
+        )
+        assert resp.status_code == 400
+        data = resp.json()
+        assert isinstance(data, list)
 
 
 class TestDeleteView:
@@ -126,6 +196,14 @@ class TestPagination:
         """Page query param is accepted."""
         resp = await client.get("/admin/api/users/?page=2")
         assert resp.status_code == 200
+
+    async def test_list_api_invalid_page_defaults_to_first_page(self, seeded_client):
+        """Non-integer page falls back to first page."""
+        resp_invalid = await seeded_client.get("/admin/api/users/?page=abc")
+        resp_page1 = await seeded_client.get("/admin/api/users/?page=1")
+
+        assert resp_invalid.status_code == 200
+        assert resp_invalid.json() == resp_page1.json()
 
     async def test_list_api_with_multiple_records(self, seeded_client, session_maker):
         """Multiple records show in list."""
