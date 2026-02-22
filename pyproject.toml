@@ -40,7 +40,11 @@ classifiers = [
   "Framework :: Pydantic :: 2",
   "Framework :: FastAPI",
 ]
-dependencies = ["fastui>=0.6.0"]
+dependencies = [
+  "fastui>=0.6.0",
+  "fastapi>=0.100.0",
+  "sqlalchemy>=2.0.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/hasansezertasan/fastui-admin#readme"
@@ -53,14 +57,13 @@ path = "src/fastui_admin/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
-  "coverage[toml]>=7.0.0, <7.5.0",
-  "pytest>=7.0.0, <8.0.0",
-  "pre-commit>=3.0.0, <4.0.0",
-  "fastapi[all]>=0.100",
-  "litestar>=2.0.0, <3.0.0",
-  "SQLAlchemy-Utils>=0.40.0, <0.42.0",
-  "SQLAlchemy-Mixins>=2.0.5",
-  "SQLalchemy[aiosqlite, asyncio]>=2.0.0, <3.0.0",
+  "coverage[toml]>=7.0.0",
+  "pytest>=7.0.0",
+  "pytest-asyncio>=0.21.0",
+  "httpx>=0.24.0",
+  "pre-commit>=3.0.0",
+  "aiosqlite>=0.19.0",
+  "greenlet>=3.0.0",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -68,7 +71,7 @@ test-cov = "coverage run -m pytest {args:tests}"
 cov-report = ["- coverage combine", "coverage report"]
 cov = ["test-cov", "cov-report"]
 pre = "pre-commit run --all-files --hook-stage manual --show-diff-on-failure"
-run = "uvicorn playground.main:app --host 0.0.0.0 --port 5000 --workers 2 --reload"
+run = "uvicorn examples.basic.main:app --host 0.0.0.0 --port 5000 --reload"
 
 [[tool.hatch.envs.all.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
@@ -142,6 +145,9 @@ ban-relative-imports = "all"
 # Tests can use magic values, assertions, and relative imports
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [tool.coverage.run]
 source_pkgs = ["fastui_admin", "tests"]
 branch = true
@@ -154,3 +160,13 @@ tests = ["tests", "*/fastui-admin/tests"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.1",
+    "pytest-cov>=5.0.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+    "aiosqlite>=0.19.0",
+    "greenlet>=3.0.0",
+]
