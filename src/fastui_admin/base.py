@@ -122,10 +122,7 @@ class BaseAdmin:
             from sqlalchemy.orm import sessionmaker  # noqa: PLC0415
 
             if isinstance(session_maker, sessionmaker):
-                msg = (
-                    "Sync sessionmaker is not supported. "
-                    "Use async_sessionmaker from sqlalchemy.ext.asyncio instead."
-                )
+                msg = "Sync sessionmaker is not supported. Use async_sessionmaker from sqlalchemy.ext.asyncio instead."
                 raise TypeError(msg)
         except ImportError:
             pass
