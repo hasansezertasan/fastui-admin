@@ -429,7 +429,7 @@ class BaseModelView(BaseView):
             action_components.append(
                 c.ModelForm(
                     model=_DeleteConfirmModel,
-                    submit_url=f"./{pk}/delete",
+                    submit_url="./delete",
                     method="POST",
                     footer=[
                         c.Button(text="Delete", class_name="btn btn-danger"),

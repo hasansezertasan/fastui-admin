@@ -12,6 +12,7 @@ from fastui_admin.utils import (
     get_model_columns,
     get_pk_column,
     get_python_type,
+    slugify,
     sqlalchemy_to_pydantic,
 )
 
@@ -46,6 +47,23 @@ class TestGetPythonType:
             pass
 
         assert get_python_type(CustomType()) is str
+
+
+class TestSlugify:
+    def test_normalizes_spaces_and_case(self):
+        assert slugify("  Hello  World  ") == "hello-world"
+
+    def test_strips_punctuation_and_collapses_hyphens(self):
+        assert slugify("Hello, world!!! -- test") == "hello-world-test"
+
+    def test_strips_leading_and_trailing_hyphens(self):
+        assert slugify("---Hello---") == "hello"
+
+    def test_simple_name(self):
+        assert slugify("Audit Logs") == "audit-logs"
+
+    def test_already_slug(self):
+        assert slugify("already-good") == "already-good"
 
 
 class TestSqlalchemyToPydantic:

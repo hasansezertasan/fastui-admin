@@ -29,6 +29,23 @@ def _find_component_types(data: Any) -> Set[str]:
     return types
 
 
+def _find_pagination(data: Any) -> Any:
+    """Recursively find the Pagination component dict in a FastUI JSON response."""
+    if isinstance(data, dict):
+        if data.get("type") == "Pagination":
+            return data
+        for v in data.values():
+            result = _find_pagination(v)
+            if result is not None:
+                return result
+    elif isinstance(data, list):
+        for item in data:
+            result = _find_pagination(item)
+            if result is not None:
+                return result
+    return None
+
+
 @pytest_asyncio.fixture()
 async def client(app, setup_db):  # noqa: ARG001
     transport = ASGITransport(app=app)
@@ -193,9 +210,12 @@ class TestDeleteView:
 
 class TestPagination:
     async def test_list_api_pagination_param(self, client):
-        """Page query param is accepted."""
+        """Page query param is accepted and metadata reflects requested page."""
         resp = await client.get("/admin/api/users/?page=2")
         assert resp.status_code == 200
+        pagination = _find_pagination(resp.json())
+        assert pagination is not None
+        assert pagination["page"] == 2
 
     async def test_list_api_invalid_page_defaults_to_first_page(self, seeded_client):
         """Non-integer page falls back to first page."""
@@ -205,14 +225,23 @@ class TestPagination:
         assert resp_invalid.status_code == 200
         assert resp_invalid.json() == resp_page1.json()
 
+        pagination = _find_pagination(resp_invalid.json())
+        assert pagination is not None
+        assert pagination["page"] == 1
+
     async def test_list_api_with_multiple_records(self, seeded_client, session_maker):
-        """Multiple records show in list."""
+        """Multiple records show in list with correct pagination total."""
         async with session_maker() as session:
             for i in range(5):
                 session.add(User(username=f"user{i}", email=f"u{i}@e.com", is_active=True))
             await session.commit()
         resp = await seeded_client.get("/admin/api/users/")
         assert resp.status_code == 200
+        pagination = _find_pagination(resp.json())
+        assert pagination is not None
+        # 1 seeded alice + 5 new users = 6 total
+        assert pagination["total"] == 6
+        assert pagination["page_size"] == 10
 
 
 class TestCatchAll:

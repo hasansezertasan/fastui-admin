@@ -3,7 +3,9 @@
 # SPDX-License-Identifier: MIT
 """Layout system for FastUI Admin pages."""
 
-from typing import TYPE_CHECKING, List, Literal, Optional, Union
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
 
 from fastui import components as c
 from fastui import prebuilt_html
@@ -22,23 +24,23 @@ class MasterLayout:
     def __init__(
         self,
         title: str = "Admin",
-        logo_url: Optional[str] = None,
+        logo_url: str | None = None,
     ):
         self.title = title
         self.logo_url = logo_url
-        self._admin: Optional[BaseAdmin] = None
+        self._admin: BaseAdmin | None = None
 
-    def set_admin(self, admin: "BaseAdmin") -> None:
+    def set_admin(self, admin: BaseAdmin) -> None:
         """Set admin reference for navbar generation."""
         self._admin = admin
 
     def get_prebuilt_html(
         self,
         *,
-        title: Optional[str] = None,
-        api_root_url: Optional[str] = None,
-        api_path_mode: Optional[Literal["append", "query"]] = None,
-        api_path_strip: Optional[str] = None,
+        title: str | None = None,
+        api_root_url: str | None = None,
+        api_path_mode: Literal["append", "query"] | None = None,
+        api_path_strip: str | None = None,
     ) -> str:
         """Get FastUI prebuilt HTML for serving the React frontend."""
         return prebuilt_html(
@@ -48,13 +50,13 @@ class MasterLayout:
             api_path_strip=api_path_strip,
         )
 
-    def page_title(self, text: Optional[str] = None) -> c.PageTitle:
+    def page_title(self, text: str | None = None) -> c.PageTitle:
         """Create page title component."""
         return c.PageTitle(text=text or self.title)
 
     def navbar(self) -> c.Navbar:
         """Build navigation bar with links to all visible views."""
-        start_links: List[c.Link] = []
+        start_links: list[c.Link] = []
 
         if self._admin:
             for view in self._admin.views:
@@ -75,7 +77,7 @@ class MasterLayout:
             start_links=start_links,
         )
 
-    def footer(self) -> Union[c.Footer, c.Div]:
+    def footer(self) -> c.Footer | c.Div:
         """Build footer component."""
         return c.Footer(
             extra_text="Powered by FastUI Admin",
@@ -86,7 +88,7 @@ class MasterLayout:
         """Wrap components in a Page container."""
         return c.Page(components=list(components))
 
-    def render(self, *components: c.AnyComponent) -> List[c.AnyComponent]:
+    def render(self, *components: c.AnyComponent) -> list[c.AnyComponent]:
         """Render full page with navbar, content, and footer.
 
         Returns a list of components ready to be serialized as JSON response.
