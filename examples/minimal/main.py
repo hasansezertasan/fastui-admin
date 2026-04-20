@@ -11,7 +11,11 @@ Then visit:
     http://localhost:5000/admin/
 """
 
-from typing import ClassVar, List
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from typing import ClassVar
 
 from fastapi import FastAPI
 from sqlalchemy import Integer, String
@@ -38,18 +42,21 @@ class Todo(Base):
 # --- App ---
 
 engine = create_async_engine("sqlite+aiosqlite:///./example.db", echo=True)
-app = FastAPI()
 
 
-@app.on_event("startup")
-async def startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 class TodoAdmin(BaseModelView, model=Todo):
     name: ClassVar[str] = "Todos"
-    column_list: ClassVar[List[str]] = ["id", "title", "status"]
+    column_list: ClassVar[list[str]] = ["id", "title", "status"]
 
 
 admin = BaseAdmin(app=app, engine=engine, title="Minimal Admin")

@@ -11,8 +11,12 @@ Then visit:
     http://localhost:5000/admin/
 """
 
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import ClassVar, List
+from typing import ClassVar
 
 from fastapi import FastAPI
 from sqlalchemy import DateTime, Float, Integer, String, select
@@ -56,7 +60,7 @@ class Product(Base):
 
 class AuditLogAdmin(BaseModelView, model=AuditLog):
     name: ClassVar[str] = "Audit Logs"
-    column_list: ClassVar[List[str]] = ["id", "action", "user", "detail", "timestamp"]
+    column_list: ClassVar[list[str]] = ["id", "action", "user", "detail", "timestamp"]
     can_create: ClassVar[bool] = False
     can_edit: ClassVar[bool] = False
     can_delete: ClassVar[bool] = False
@@ -64,21 +68,23 @@ class AuditLogAdmin(BaseModelView, model=AuditLog):
 
 class ProductAdmin(BaseModelView, model=Product):
     name: ClassVar[str] = "Products"
-    column_list: ClassVar[List[str]] = ["id", "name", "price", "sku"]
+    column_list: ClassVar[list[str]] = ["id", "name", "price", "sku"]
     can_delete: ClassVar[bool] = False
 
 
 # --- App ---
 
 engine = create_async_engine("sqlite+aiosqlite:///./example.db", echo=True)
-app = FastAPI(title="Read-Only Admin Example")
 
 
-@app.on_event("startup")
-async def startup() -> None:
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    yield
 
+
+app = FastAPI(title="Read-Only Admin Example", lifespan=lifespan)
 
 admin = BaseAdmin(app=app, engine=engine, title="Read-Only Admin")
 admin.add_view(AuditLogAdmin)

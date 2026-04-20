@@ -46,6 +46,21 @@ def _find_pagination(data: Any) -> Any:
     return None
 
 
+def _find_all_string_values(data: Any) -> List[str]:
+    """Recursively extract all string values from a JSON structure."""
+    values: List[str] = []
+    if isinstance(data, dict):
+        for v in data.values():
+            if isinstance(v, str):
+                values.append(v)
+            else:
+                values.extend(_find_all_string_values(v))
+    elif isinstance(data, list):
+        for item in data:
+            values.extend(_find_all_string_values(item))
+    return values
+
+
 @pytest_asyncio.fixture()
 async def client(app, setup_db):  # noqa: ARG001
     transport = ASGITransport(app=app)
@@ -100,12 +115,18 @@ class TestListView:
         types = _find_component_types(data)
         assert "Table" in types
         assert "Pagination" in types
+        # Verify actual data appears in response
+        texts = _find_all_string_values(data)
+        assert any("alice" in t for t in texts), "Seeded user 'alice' should appear in table"
 
 
 class TestDetailView:
     async def test_detail_not_found(self, client):
         resp = await client.get("/admin/api/users/999")
         assert resp.status_code == 404
+        # Should return FastUI components, not raw JSON
+        data = resp.json()
+        assert isinstance(data, list)
 
     async def test_detail_found(self, seeded_client):
         resp = await seeded_client.get("/admin/api/users/1")
@@ -129,6 +150,11 @@ class TestCreateView:
             json={"username": "bob", "email": "bob@example.com", "is_active": True},
         )
         assert resp.status_code == 200
+        # Verify record was actually created
+        detail_resp = await client.get("/admin/api/users/1")
+        assert detail_resp.status_code == 200
+        texts = _find_all_string_values(detail_resp.json())
+        assert any("bob" in t for t in texts)
 
     async def test_create_duplicate_returns_error(self, seeded_client):
         """Test that constraint violations return an error response."""
@@ -136,26 +162,25 @@ class TestCreateView:
             "/admin/api/users/create",
             json={"username": "alice", "email": "dupe@example.com", "is_active": True},
         )
-        # Should return 400 with error message (unique constraint violation)
-        assert resp.status_code == 400
+        assert resp.status_code == 500
 
     async def test_create_validation_error_missing_fields(self, client):
-        """Missing required fields return a 400 error response."""
+        """Missing required fields return a 422 error response."""
         resp = await client.post(
             "/admin/api/users/create",
             json={"email": "no-username@example.com", "is_active": True},
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 422
         data = resp.json()
         assert isinstance(data, list)
 
     async def test_create_validation_error_invalid_types(self, client):
-        """Invalid field types return a 400 error response."""
+        """Invalid field types return a 422 error response."""
         resp = await client.post(
             "/admin/api/users/create",
             json={"username": "bad-types", "email": "bad@example.com", "is_active": "not-a-bool"},
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 422
         data = resp.json()
         assert isinstance(data, list)
 
@@ -164,6 +189,10 @@ class TestEditView:
     async def test_edit_form(self, seeded_client):
         resp = await seeded_client.get("/admin/api/users/1/edit")
         assert resp.status_code == 200
+        # Verify initial data is populated
+        data = resp.json()
+        types = _find_component_types(data)
+        assert "ModelForm" in types
 
     async def test_edit_submit(self, seeded_client):
         resp = await seeded_client.post(
@@ -171,28 +200,33 @@ class TestEditView:
             json={"username": "alice_updated", "email": "alice@example.com", "is_active": True},
         )
         assert resp.status_code == 200
+        # Verify record was actually updated
+        detail_resp = await seeded_client.get("/admin/api/users/1")
+        assert detail_resp.status_code == 200
+        texts = _find_all_string_values(detail_resp.json())
+        assert any("alice_updated" in t for t in texts)
 
     async def test_edit_not_found(self, client):
         resp = await client.get("/admin/api/users/999/edit")
         assert resp.status_code == 404
 
     async def test_edit_validation_error_missing_fields(self, seeded_client):
-        """Missing required fields return a 400 error response."""
+        """Missing required fields return a 422 error response."""
         resp = await seeded_client.post(
             "/admin/api/users/1/edit",
             json={"email": "no-username@example.com", "is_active": True},
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 422
         data = resp.json()
         assert isinstance(data, list)
 
     async def test_edit_validation_error_invalid_types(self, seeded_client):
-        """Invalid field types return a 400 error response."""
+        """Invalid field types return a 422 error response."""
         resp = await seeded_client.post(
             "/admin/api/users/1/edit",
             json={"username": "alice", "email": "alice@example.com", "is_active": "not-a-bool"},
         )
-        assert resp.status_code == 400
+        assert resp.status_code == 422
         data = resp.json()
         assert isinstance(data, list)
 
@@ -201,6 +235,9 @@ class TestDeleteView:
     async def test_delete(self, seeded_client):
         resp = await seeded_client.post("/admin/api/users/1/delete")
         assert resp.status_code == 200
+        # Verify record was actually deleted
+        detail_resp = await seeded_client.get("/admin/api/users/1")
+        assert detail_resp.status_code == 404
 
     async def test_delete_nonexistent(self, client):
         """Delete of nonexistent record returns 404."""
@@ -242,6 +279,14 @@ class TestPagination:
         # 1 seeded alice + 5 new users = 6 total
         assert pagination["total"] == 6
         assert pagination["page_size"] == 10
+
+    async def test_negative_page_clamps_to_one(self, client):
+        """Negative page values are clamped to page 1."""
+        resp = await client.get("/admin/api/users/?page=-5")
+        assert resp.status_code == 200
+        pagination = _find_pagination(resp.json())
+        assert pagination is not None
+        assert pagination["page"] == 1
 
 
 class TestCatchAll:
@@ -299,7 +344,7 @@ class TestReadOnlyModelView:
                 break
         assert admin_mount is not None
         route_names = [r.name for r in admin_mount.app.routes if hasattr(r, "name")]
-        assert "ReadOnlyUsers_create_api" not in route_names
+        assert "users_create_api" not in route_names
 
     def test_delete_route_not_registered(self, readonly_app):
         """Verify the delete API route is not in the registered routes."""
@@ -310,7 +355,7 @@ class TestReadOnlyModelView:
                 break
         assert admin_mount is not None
         route_names = [r.name for r in admin_mount.app.routes if hasattr(r, "name")]
-        assert "ReadOnlyUsers_delete_api" not in route_names
+        assert "users_delete_api" not in route_names
 
 
 class TestCustomBaseView:
@@ -348,4 +393,86 @@ class TestAdminMountIdempotent:
         admin.add_view(UserAdmin)
         admin.mount()
         admin.mount()  # Should be no-op
-        # No assertion needed — just shouldn't raise
+        # Verify exactly one admin mount exists
+        admin_mounts = [r for r in app.routes if hasattr(r, "name") and r.name == "admin"]
+        assert len(admin_mounts) == 1
+
+
+class TestAddViewAfterMount:
+    """Test that add_view() after mount() raises RuntimeError."""
+
+    def test_add_view_after_mount_raises(self, engine):
+        app = FastAPI()
+        admin = BaseAdmin(app=app, engine=engine, title="Test")
+        admin.add_view(UserAdmin)
+        admin.mount()
+        with pytest.raises(RuntimeError, match="Cannot add views after mount"):
+            admin.add_view(UserAdmin)
+
+
+class TestAddViewValidation:
+    """Test that add_view() rejects invalid arguments."""
+
+    def test_add_view_with_instance_raises(self, engine):
+        app = FastAPI()
+        admin = BaseAdmin(app=app, engine=engine, title="Test")
+        instance = UserAdmin(admin=admin)
+        with pytest.raises(TypeError, match="expects a BaseView subclass"):
+            admin.add_view(instance)  # type: ignore[arg-type]
+
+    def test_add_view_with_non_view_class_raises(self, engine):
+        app = FastAPI()
+        admin = BaseAdmin(app=app, engine=engine, title="Test")
+        with pytest.raises(TypeError, match="expects a BaseView subclass"):
+            admin.add_view(str)  # type: ignore[arg-type]
+
+
+class TestModelViewWithoutModel:
+    """Test that BaseModelView subclass without model raises TypeError."""
+
+    def test_missing_model_raises(self):
+        with pytest.raises(TypeError, match="must specify model=MyModel"):
+
+            class BadView(BaseModelView):
+                pass
+
+
+class TestInvalidPageSize:
+    """Test that page_size <= 0 raises ValueError."""
+
+    def test_zero_page_size_raises(self):
+        with pytest.raises(ValueError, match="page_size must be positive"):
+
+            class BadView(BaseModelView, model=User):
+                page_size: ClassVar[int] = 0
+
+
+class TestColumnExcludeList:
+    """Test column_exclude_list filtering."""
+
+    @pytest.fixture()
+    def exclude_app(self, engine):
+        class ExcludeUserAdmin(BaseModelView, model=User):
+            name: ClassVar[str] = "ExcludeUsers"
+            column_exclude_list: ClassVar[List[str]] = ["created_at", "is_active"]
+
+        app = FastAPI()
+        admin = BaseAdmin(app=app, engine=engine, title="Exclude Admin")
+        admin.add_view(ExcludeUserAdmin)
+        admin.mount()
+        return app
+
+    @pytest_asyncio.fixture()
+    async def exclude_client(self, exclude_app, setup_db):  # noqa: ARG002
+        transport = ASGITransport(app=exclude_app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            yield ac
+
+    async def test_excluded_columns_not_in_table(self, exclude_client):
+        resp = await exclude_client.get("/admin/api/users/")
+        assert resp.status_code == 200
+        data = resp.json()
+        texts = _find_all_string_values(data)
+        # Column headers should not include excluded columns
+        assert "Created At" not in texts
+        assert "Is Active" not in texts

@@ -23,16 +23,13 @@ class MasterLayout:
 
     def __init__(
         self,
+        admin: BaseAdmin,
         title: str = "Admin",
         logo_url: str | None = None,
     ):
+        self._admin = admin
         self.title = title
         self.logo_url = logo_url
-        self._admin: BaseAdmin | None = None
-
-    def set_admin(self, admin: BaseAdmin) -> None:
-        """Set admin reference for navbar generation."""
-        self._admin = admin
 
     def get_prebuilt_html(
         self,
@@ -42,7 +39,7 @@ class MasterLayout:
         api_path_mode: Literal["append", "query"] | None = None,
         api_path_strip: str | None = None,
     ) -> str:
-        """Get FastUI prebuilt HTML for serving the React frontend."""
+        """Get FastUI prebuilt HTML for serving the SPA shell that loads the React frontend."""
         return prebuilt_html(
             title=title or self.title,
             api_root_url=api_root_url,
@@ -58,18 +55,17 @@ class MasterLayout:
         """Build navigation bar with links to all visible views."""
         start_links: list[c.Link] = []
 
-        if self._admin:
-            for view in self._admin.views:
-                if view.is_visible:
-                    url = self._admin.get_relative_url(view.get_url())
+        for view in self._admin.views:
+            if view.is_visible:
+                url = self._admin.get_relative_url(view.get_url())
 
-                    start_links.append(
-                        c.Link(
-                            components=[c.Text(text=view.name)],
-                            on_click=GoToEvent(url=url),
-                            active=f"startswith:{url}" if url != "/" else url,
-                        )
+                start_links.append(
+                    c.Link(
+                        components=[c.Text(text=view.name)],
+                        on_click=GoToEvent(url=url),
+                        active=f"startswith:{url}" if url != "/" else url,
                     )
+                )
 
         return c.Navbar(
             title=self.title,
@@ -77,7 +73,7 @@ class MasterLayout:
             start_links=start_links,
         )
 
-    def footer(self) -> c.Footer | c.Div:
+    def footer(self) -> c.Footer:
         """Build footer component."""
         return c.Footer(
             extra_text="Powered by FastUI Admin",

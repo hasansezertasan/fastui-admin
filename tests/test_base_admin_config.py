@@ -22,7 +22,7 @@ class TestBaseAdminConfig:
         """Passing a sync engine raises TypeError."""
         app = FastAPI()
         engine = create_engine("sqlite://")
-        with pytest.raises(TypeError, match="Sync engine"):
+        with pytest.raises(TypeError, match="not a supported async engine"):
             BaseAdmin(app=app, engine=engine)
 
     def test_sync_session_maker_raises(self) -> None:
@@ -32,3 +32,9 @@ class TestBaseAdminConfig:
         sm = sessionmaker(bind=engine)
         with pytest.raises(TypeError, match="Sync sessionmaker"):
             BaseAdmin(app=app, session_maker=sm)
+
+    def test_unknown_session_maker_type_raises(self) -> None:
+        """Passing an unrecognized object as session_maker raises TypeError."""
+        app = FastAPI()
+        with pytest.raises(TypeError, match="Unrecognized session_maker type"):
+            BaseAdmin(app=app, session_maker="not-a-session-maker")  # type: ignore[arg-type]

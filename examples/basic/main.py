@@ -11,10 +11,12 @@ Then visit:
     http://localhost:5000/admin/
 """
 
+from __future__ import annotations
+
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import ClassVar, List
+from typing import ClassVar
 
 from fastapi import FastAPI
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, select
@@ -43,7 +45,7 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
 
-    posts: Mapped[List["Post"]] = relationship(back_populates="author")
+    posts: Mapped[list[Post]] = relationship(back_populates="author")
 
 
 class Post(Base):
@@ -80,7 +82,7 @@ class UserAdmin(BaseModelView, model=User):
     """Admin view for User model."""
 
     name: ClassVar[str] = "Users"
-    column_list: ClassVar[List[str]] = ["id", "username", "email", "is_active", "created_at"]
+    column_list: ClassVar[list[str]] = ["id", "username", "email", "is_active", "created_at"]
     page_size: ClassVar[int] = 25
 
 
@@ -88,7 +90,7 @@ class PostAdmin(BaseModelView, model=Post):
     """Admin view for Post model."""
 
     name: ClassVar[str] = "Posts"
-    column_list: ClassVar[List[str]] = ["id", "title", "published", "author_id", "created_at"]
+    column_list: ClassVar[list[str]] = ["id", "title", "published", "author_id", "created_at"]
     page_size: ClassVar[int] = 25
 
 

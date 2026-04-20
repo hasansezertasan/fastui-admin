@@ -22,10 +22,12 @@ from fastui_admin.utils import slugify, sqlalchemy_to_pydantic
 
 logger = logging.getLogger(__name__)
 
-# Cached empty model for delete confirmation forms
+# Empty Pydantic model required by FastUI's ModelForm for the delete confirmation
+# button (no actual form fields needed).
 _DeleteConfirmModel = create_model("DeleteConfirm")
 
 if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
     from sqlalchemy.orm import DeclarativeBase
 
     from fastui_admin.base import BaseAdmin
@@ -37,7 +39,6 @@ class BaseView:
     Provides common functionality for visibility, URL generation, and rendering.
     """
 
-    # View metadata (override in subclasses)
     name: ClassVar[str] = ""
     category: ClassVar[Optional[str]] = None
     icon: ClassVar[Optional[str]] = None
@@ -83,10 +84,9 @@ class AdminIndexView(BaseView):
 
     async def render(self, request: Request) -> List[c.AnyComponent]:  # noqa: ARG002
         """Render dashboard with welcome message and links to model views."""
-        # Build links to all model views
         model_links = []
         for view in self._admin.views:
-            if view.is_visible and view != self and hasattr(view, "model"):
+            if view.is_visible and view != self and isinstance(view, BaseModelView):
                 url = self._admin.get_relative_url(view.get_url())
 
                 model_links.append(
@@ -103,13 +103,15 @@ class AdminIndexView(BaseView):
         ]
 
         if model_links:
-            page_components.append(c.Div(components=list(model_links), class_name="mt-3"))
+            page_components.append(c.Div(components=model_links, class_name="mt-3"))
 
         return self._admin.layout.render(*page_components)
 
 
 class BaseModelView(BaseView):
     """View for SQLAlchemy model CRUD operations.
+
+    Only integer primary keys are currently supported.
 
     Usage:
         ```python
@@ -139,19 +141,26 @@ class BaseModelView(BaseView):
 
         Allows: class UserAdmin(BaseModelView, model=User)
         Also sets a default name from the model's table name if not explicitly provided.
+        Raises TypeError if a concrete subclass omits the model parameter.
         """
         super().__init_subclass__(**kwargs)
         if model is not None:
             cls.model = model
-            # Set default name from model if not explicitly set on this class
             if "name" not in cls.__dict__:
-                cls.name = str(getattr(model, "__tablename__", model.__name__)).title()
+                raw_name = str(getattr(model, "__tablename__", model.__name__))
+                cls.name = raw_name.replace("_", " ").title()
+        elif not hasattr(cls, "model"):
+            msg = f"{cls.__name__} must specify model=MyModel. Example: class MyAdmin(BaseModelView, model=MyModel)"
+            raise TypeError(msg)
+
+        if "page_size" in cls.__dict__ and cls.__dict__["page_size"] <= 0:
+            msg = f"page_size must be positive, got {cls.__dict__['page_size']}"
+            raise ValueError(msg)
 
     def __init__(self, admin: "BaseAdmin"):
         """Initialize model view."""
         super().__init__(admin)
 
-        # Cache model metadata
         self._pk_name = self._get_pk_name()
         self._pydantic_model: Optional[Type[BaseModel]] = None
         self._form_model: Optional[Type[BaseModel]] = None
@@ -170,6 +179,14 @@ class BaseModelView(BaseView):
         all_columns = [col.key for col in mapper.columns]
 
         if self.column_list:
+            invalid = [col for col in self.column_list if col not in all_columns]
+            if invalid:
+                logger.warning(
+                    "column_list for %s contains invalid column names: %s. Available: %s",
+                    self.name,
+                    invalid,
+                    all_columns,
+                )
             return [col for col in self.column_list if col in all_columns]
 
         return [col for col in all_columns if col not in self.column_exclude_list]
@@ -186,13 +203,10 @@ class BaseModelView(BaseView):
     def _get_form_model(self) -> Type[BaseModel]:
         """Get Pydantic model for forms (excludes PK)."""
         if self._form_model is None:
-            columns = self._get_columns()
-            # Exclude primary key for forms
-            columns = [col for col in columns if col != self._pk_name]
-
             self._form_model = sqlalchemy_to_pydantic(
                 self.model,
-                include_columns=columns,
+                include_columns=self._get_columns(),
+                for_form=True,
             )
         return self._form_model
 
@@ -207,20 +221,19 @@ class BaseModelView(BaseView):
         base = f"/{table_name}"
 
         routes = [
-            # List view
-            Route(f"{base}/", endpoint=self._list_html, name=f"{self.name}_list"),
-            Route(f"/api{base}/", endpoint=self._list_api, name=f"{self.name}_list_api"),
+            Route(f"{base}/", endpoint=self._list_html, name=f"{table_name}_list"),
+            Route(f"/api{base}/", endpoint=self._list_api, name=f"{table_name}_list_api"),
         ]
 
         if self.can_create:
             routes.extend(
                 [
-                    Route(f"{base}/create", endpoint=self._create_html, name=f"{self.name}_create"),
+                    Route(f"{base}/create", endpoint=self._create_html, name=f"{table_name}_create"),
                     Route(
                         f"/api{base}/create",
                         endpoint=self._create_api,
                         methods=["GET", "POST"],
-                        name=f"{self.name}_create_api",
+                        name=f"{table_name}_create_api",
                     ),
                 ]
             )
@@ -228,20 +241,20 @@ class BaseModelView(BaseView):
         if self.can_view_details:
             routes.extend(
                 [
-                    Route(f"{base}/{{pk:int}}", endpoint=self._detail_html, name=f"{self.name}_detail"),
-                    Route(f"/api{base}/{{pk:int}}", endpoint=self._detail_api, name=f"{self.name}_detail_api"),
+                    Route(f"{base}/{{pk:int}}", endpoint=self._detail_html, name=f"{table_name}_detail"),
+                    Route(f"/api{base}/{{pk:int}}", endpoint=self._detail_api, name=f"{table_name}_detail_api"),
                 ]
             )
 
         if self.can_edit:
             routes.extend(
                 [
-                    Route(f"{base}/{{pk:int}}/edit", endpoint=self._edit_html, name=f"{self.name}_edit"),
+                    Route(f"{base}/{{pk:int}}/edit", endpoint=self._edit_html, name=f"{table_name}_edit"),
                     Route(
                         f"/api{base}/{{pk:int}}/edit",
                         endpoint=self._edit_api,
                         methods=["GET", "POST"],
-                        name=f"{self.name}_edit_api",
+                        name=f"{table_name}_edit_api",
                     ),
                 ]
             )
@@ -252,14 +265,20 @@ class BaseModelView(BaseView):
                     f"/api{base}/{{pk:int}}/delete",
                     endpoint=self._delete_api,
                     methods=["POST"],
-                    name=f"{self.name}_delete_api",
+                    name=f"{table_name}_delete_api",
                 )
             )
 
         return routes
 
-    def _error_response(self, message: str, back_url: Optional[str] = None) -> JSONResponse:
-        """Return a JSON response rendering an error page in the admin UI."""
+    def _error_response(self, message: str, *, back_url: Optional[str] = None, status_code: int = 400) -> JSONResponse:
+        """Return a JSON response rendering an error page in the admin UI.
+
+        Args:
+            message: Error message to display.
+            back_url: URL for the back button. Defaults to model list.
+            status_code: HTTP status code (default: 400).
+        """
         if back_url is None:
             back_url = f"{self.get_url()}/"
         components = self._admin.layout.render(
@@ -273,10 +292,10 @@ class BaseModelView(BaseView):
         )
         return JSONResponse(
             [comp.model_dump(mode="json", exclude_none=True) for comp in components],
-            status_code=400,
+            status_code=status_code,
         )
 
-    # --- HTML Endpoints (serve React frontend) ---
+    # --- HTML Endpoints (serve the SPA shell that loads the React frontend) ---
 
     async def _list_html(self, request: Request) -> HTMLResponse:  # noqa: ARG002
         """Serve frontend HTML for list view."""
@@ -316,7 +335,7 @@ class BaseModelView(BaseView):
 
     # --- API Endpoints (return FastUI components as JSON) ---
 
-    def _get_session_maker(self) -> Any:
+    def _get_session_maker(self) -> "async_sessionmaker[AsyncSession]":
         """Get session maker, raising if not configured."""
         sm = self._admin.session_maker
         if sm is None:
@@ -332,25 +351,29 @@ class BaseModelView(BaseView):
             page = 1
         page_size = self.page_size
 
-        async with self._get_session_maker()() as session:
-            # Count total records
-            count_stmt = sa_select(sa_func.count()).select_from(self.model)
-            total = (await session.execute(count_stmt)).scalar() or 0
+        try:
+            async with self._get_session_maker()() as session:
+                count_stmt = sa_select(sa_func.count()).select_from(self.model)
+                total = (await session.execute(count_stmt)).scalar() or 0
 
-            # Fetch page of records
-            stmt = sa_select(self.model).offset((page - 1) * page_size).limit(page_size)
-            result = await session.execute(stmt)
-            items = result.scalars().all()
+                stmt = sa_select(self.model).offset((page - 1) * page_size).limit(page_size)
+                result = await session.execute(stmt)
+                items = result.scalars().all()
 
-        # Convert to Pydantic for FastUI
-        pydantic_model = self._get_pydantic_model()
-        data = [pydantic_model.model_validate(item, from_attributes=True) for item in items]
+                # Convert inside session to avoid detached instance access
+                pydantic_model = self._get_pydantic_model()
+                data = [pydantic_model.model_validate(item, from_attributes=True) for item in items]
+        except SQLAlchemyError:
+            logger.exception("Error listing %s", self.name)
+            return self._error_response(
+                f"Failed to load {self.name} list. Check database connection and server logs.",
+                status_code=500,
+            )
 
         # Build table columns
         columns = []
         for col_name in self._get_columns():
             col = DisplayLookup(field=col_name)
-            # Make PK clickable to detail view
             if col_name == self._pk_name and self.can_view_details:
                 col = DisplayLookup(
                     field=col_name,
@@ -358,7 +381,6 @@ class BaseModelView(BaseView):
                 )
             columns.append(col)
 
-        # Build page components
         header_components: List[c.AnyComponent] = [c.Heading(text=self.name, level=2)]
 
         if self.can_create:
@@ -394,17 +416,28 @@ class BaseModelView(BaseView):
         """API endpoint returning detail view components."""
         pk = request.path_params["pk"]
 
-        async with self._get_session_maker()() as session:
-            stmt = sa_select(self.model).where(getattr(self.model, self._pk_name) == pk)
-            result = await session.execute(stmt)
-            item = result.scalar_one_or_none()
+        try:
+            async with self._get_session_maker()() as session:
+                stmt = sa_select(self.model).where(getattr(self.model, self._pk_name) == pk)
+                result = await session.execute(stmt)
+                item = result.scalar_one_or_none()
 
-        if not item:
-            return JSONResponse({"detail": "Not found"}, status_code=404)
+                if not item:
+                    return self._error_response(
+                        f"{self.name} with ID {pk} was not found.",
+                        back_url=f"{self.get_url()}/",
+                        status_code=404,
+                    )
 
-        # Convert to Pydantic for display
-        pydantic_model = self._get_pydantic_model()
-        data = pydantic_model.model_validate(item, from_attributes=True)
+                # Convert inside session to avoid detached instance access
+                pydantic_model = self._get_pydantic_model()
+                data = pydantic_model.model_validate(item, from_attributes=True)
+        except SQLAlchemyError:
+            logger.exception("Error loading %s #%s", self.name, pk)
+            return self._error_response(
+                f"Failed to load {self.name}. Check database connection and server logs.",
+                status_code=500,
+            )
 
         # Build action buttons
         action_components: List[c.AnyComponent] = [
@@ -425,7 +458,6 @@ class BaseModelView(BaseView):
             )
 
         if self.can_delete:
-            # Use a form to POST to the delete endpoint
             action_components.append(
                 c.ModelForm(
                     model=_DeleteConfirmModel,
@@ -448,7 +480,6 @@ class BaseModelView(BaseView):
     async def _create_api(self, request: Request) -> JSONResponse:
         """API endpoint for create form (GET) and create action (POST)."""
         if request.method == "GET":
-            # Show create form
             form_model = self._get_form_model()
 
             components = self._admin.layout.render(
@@ -469,13 +500,13 @@ class BaseModelView(BaseView):
         # POST - Create new record
         raw_data = await request.json()
 
-        # Validate through Pydantic form model
         form_model = self._get_form_model()
         try:
             validated = form_model.model_validate(raw_data)
         except ValidationError as exc:
             logger.warning("Validation error creating %s: %s", self.name, exc)
-            return self._error_response("Invalid input. Please check the form values and try again.", back_url=".")
+            field_errors = "; ".join(f"{'.'.join(str(loc) for loc in e['loc'])}: {e['msg']}" for e in exc.errors())
+            return self._error_response(f"Invalid input: {field_errors}", back_url=".", status_code=422)
 
         async with self._get_session_maker()() as session:
             try:
@@ -488,10 +519,11 @@ class BaseModelView(BaseView):
                 await session.rollback()
                 logger.exception("Error creating %s", self.name)
                 return self._error_response(
-                    f"Failed to create {self.name}. Check server logs for details.", back_url="."
+                    f"Failed to create {self.name}. Check server logs for details.",
+                    back_url=".",
+                    status_code=500,
                 )
 
-        # Return redirect to detail view
         components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/{pk}"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
@@ -499,59 +531,72 @@ class BaseModelView(BaseView):
         """API endpoint for edit form (GET) and update action (POST)."""
         pk = request.path_params["pk"]
 
-        async with self._get_session_maker()() as session:
-            stmt = sa_select(self.model).where(getattr(self.model, self._pk_name) == pk)
-            result = await session.execute(stmt)
-            item = result.scalar_one_or_none()
+        try:
+            async with self._get_session_maker()() as session:
+                stmt = sa_select(self.model).where(getattr(self.model, self._pk_name) == pk)
+                result = await session.execute(stmt)
+                item = result.scalar_one_or_none()
 
-            if not item:
-                return JSONResponse({"detail": "Not found"}, status_code=404)
+                if not item:
+                    return self._error_response(
+                        f"{self.name} with ID {pk} was not found.",
+                        back_url=f"{self.get_url()}/",
+                        status_code=404,
+                    )
 
-            if request.method == "GET":
-                # Show edit form with current values
+                if request.method == "GET":
+                    form_model = self._get_form_model()
+                    pydantic_model = self._get_pydantic_model()
+                    initial_data = pydantic_model.model_validate(item, from_attributes=True).model_dump()
+
+                    components = self._admin.layout.render(
+                        c.Heading(text=f"Edit {self.name} #{pk}", level=2),
+                        c.Link(
+                            components=[c.Text(text="← Back")],
+                            on_click=BackEvent(),
+                            class_name="btn btn-secondary mb-3",
+                        ),
+                        c.ModelForm(
+                            model=form_model,
+                            submit_url=".",
+                            initial=initial_data,
+                        ),
+                    )
+
+                    return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
+
+                # POST - Update record
+                raw_data = await request.json()
+
                 form_model = self._get_form_model()
-                pydantic_model = self._get_pydantic_model()
-                initial_data = pydantic_model.model_validate(item, from_attributes=True).model_dump()
+                try:
+                    validated = form_model.model_validate(raw_data)
+                except ValidationError as exc:
+                    logger.warning("Validation error updating %s #%s: %s", self.name, pk, exc)
+                    field_errors = "; ".join(
+                        f"{'.'.join(str(loc) for loc in e['loc'])}: {e['msg']}" for e in exc.errors()
+                    )
+                    return self._error_response(f"Invalid input: {field_errors}", back_url=".", status_code=422)
 
-                components = self._admin.layout.render(
-                    c.Heading(text=f"Edit {self.name} #{pk}", level=2),
-                    c.Link(
-                        components=[c.Text(text="← Back")],
-                        on_click=BackEvent(),
-                        class_name="btn btn-secondary mb-3",
-                    ),
-                    c.ModelForm(
-                        model=form_model,
-                        submit_url=".",
-                        initial=initial_data,
-                    ),
-                )
+                try:
+                    for key, value in validated.model_dump().items():
+                        setattr(item, key, value)
+                    await session.commit()
+                except SQLAlchemyError:
+                    await session.rollback()
+                    logger.exception("Error updating %s #%s", self.name, pk)
+                    return self._error_response(
+                        f"Failed to update {self.name}. Check server logs for details.",
+                        back_url=".",
+                        status_code=500,
+                    )
+        except SQLAlchemyError:
+            logger.exception("Error loading %s #%s for edit", self.name, pk)
+            return self._error_response(
+                f"Failed to load {self.name}. Check database connection and server logs.",
+                status_code=500,
+            )
 
-                return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
-
-            # POST - Update record
-            raw_data = await request.json()
-
-            # Validate through Pydantic form model
-            form_model = self._get_form_model()
-            try:
-                validated = form_model.model_validate(raw_data)
-            except ValidationError as exc:
-                logger.warning("Validation error updating %s #%s: %s", self.name, pk, exc)
-                return self._error_response("Invalid input. Please check the form values and try again.", back_url=".")
-
-            try:
-                for key, value in validated.model_dump().items():
-                    setattr(item, key, value)
-                await session.commit()
-            except SQLAlchemyError:
-                await session.rollback()
-                logger.exception("Error updating %s #%s", self.name, pk)
-                return self._error_response(
-                    f"Failed to update {self.name}. Check server logs for details.", back_url="."
-                )
-
-        # Return redirect to detail view
         components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/{pk}"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
@@ -563,15 +608,20 @@ class BaseModelView(BaseView):
             async with self._get_session_maker()() as session:
                 item = await session.get(self.model, pk)
                 if item is None:
-                    return JSONResponse({"detail": "Not found"}, status_code=404)
+                    return self._error_response(
+                        f"{self.name} with ID {pk} was not found.",
+                        back_url=f"{self.get_url()}/",
+                        status_code=404,
+                    )
                 await session.delete(item)
                 await session.commit()
         except SQLAlchemyError:
             logger.exception("Error deleting %s #%s", self.name, pk)
             return self._error_response(
-                f"Failed to delete {self.name}. Check server logs for details.", back_url=f"{self.get_url()}/{pk}"
+                f"Failed to delete {self.name}. Check server logs for details.",
+                back_url=f"{self.get_url()}/{pk}",
+                status_code=500,
             )
 
-        # Return redirect to list view
         components = [c.FireEvent(event=GoToEvent(url=f"{self.get_url()}/"))]
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])

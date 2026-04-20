@@ -6,11 +6,10 @@
 from datetime import date, datetime
 
 from pydantic import BaseModel
-from sqlalchemy import Boolean, Date, DateTime, Float, Integer, String, Text
+from sqlalchemy import Boolean, Column, Date, DateTime, Float, Integer, String, Text
 
 from fastui_admin.utils import (
-    get_model_columns,
-    get_pk_column,
+    _extract_sa_default,
     get_python_type,
     slugify,
     sqlalchemy_to_pydantic,
@@ -42,7 +41,6 @@ class TestGetPythonType:
         assert get_python_type(Date()) is date
 
     def test_unknown_defaults_to_str(self):
-        # Unknown SA type falls back to str
         class CustomType:
             pass
 
@@ -101,14 +99,19 @@ class TestSqlalchemyToPydantic:
         assert model.model_config.get("from_attributes") is True
 
 
-class TestGetPkColumn:
-    def test_returns_pk_name(self):
-        assert get_pk_column(User) == "id"
+class TestExtractSaDefault:
+    def test_column_without_default(self):
+        col = Column("test", Integer)
+        assert _extract_sa_default(col) is None
 
+    def test_column_with_scalar_default(self):
+        col = Column("status", String(20), default="pending")
+        assert _extract_sa_default(col) == "pending"
 
-class TestGetModelColumns:
-    def test_returns_all_columns(self):
-        cols = get_model_columns(User)
-        assert "id" in cols
-        assert "username" in cols
-        assert "email" in cols
+    def test_column_with_callable_default_returns_none(self):
+        col = Column("created", DateTime, default=datetime.now)
+        assert _extract_sa_default(col) is None
+
+    def test_column_with_boolean_default(self):
+        col = Column("active", Boolean, default=True)
+        assert _extract_sa_default(col) is True

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Utility functions for FastUI Admin."""
 
+import logging
 import re
 from datetime import date, datetime, time
 from decimal import Decimal
@@ -25,6 +26,8 @@ from sqlalchemy import (
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.types import TypeEngine
+
+logger = logging.getLogger(__name__)
 
 # SQLAlchemy type to Python type mapping
 SA_TYPE_MAP: Dict[Type[TypeEngine[Any]], type] = {
@@ -57,11 +60,18 @@ def slugify(name: str) -> str:
 
 
 def get_python_type(sa_type: TypeEngine[Any]) -> type:
-    """Get Python type from SQLAlchemy column type."""
+    """Get Python type from SQLAlchemy column type.
+
+    Returns str as fallback for unmapped types. This may cause Pydantic
+    validation errors for complex types like JSON or ARRAY.
+    """
     for sa_cls, py_type in SA_TYPE_MAP.items():
         if isinstance(sa_type, sa_cls):
             return py_type
-    # Default to str for unknown types
+    logger.warning(
+        "No Python type mapping for SQLAlchemy type %s; defaulting to str.",
+        type(sa_type).__name__,
+    )
     return str
 
 
@@ -147,18 +157,3 @@ def sqlalchemy_to_pydantic(
         __base__=BaseSchema,
         **fields,
     )
-
-
-def get_pk_column(model: Type[DeclarativeBase]) -> str:
-    """Get the primary key column name for a SQLAlchemy model."""
-    mapper = inspect(model)
-    if mapper.primary_key:
-        return str(mapper.primary_key[0].name)
-    msg = f"Model {model.__name__} has no primary key"
-    raise ValueError(msg)
-
-
-def get_model_columns(model: Type[DeclarativeBase]) -> List[str]:
-    """Get all column names for a SQLAlchemy model."""
-    mapper = inspect(model)
-    return [c.key for c in mapper.columns]
