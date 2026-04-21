@@ -4,9 +4,12 @@
 """Core admin class for FastUI Admin.
 
 Warning:
-    FastUI Admin does NOT provide authentication or authorization.
+    FastUI Admin does NOT provide authentication, authorization, or CSRF protection.
     All admin endpoints are publicly accessible by default.
-    You MUST add your own authentication middleware before deploying to production.
+    Mutating endpoints (create/edit/delete) accept JSON POST without CSRF tokens.
+    FastUI's fetch-based forms rely on browser same-origin policy, but XSS on the same
+    domain can bypass this. You MUST add your own authentication middleware and consider
+    CSRF protection before deploying to production.
 """
 
 import logging
@@ -263,18 +266,12 @@ class BaseAdmin:
         )
 
     async def _index_api(self, request: Request) -> JSONResponse:
-        """API endpoint returning index page components."""
-        index_view = self._views[0] if self._views else None
-        if index_view:
-            components = await index_view.render(request)
-            return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
+        """API endpoint returning index page components.
 
-        from fastui import components as c  # noqa: PLC0415
-
-        components = self.layout.render(
-            c.Heading(text=f"Welcome to {self.title}", level=2),
-            c.Paragraph(text="Select a model from the navigation."),
-        )
+        The index view is always present — mount() inserts it at _views[0].
+        """
+        index_view = self._views[0]
+        components = await index_view.render(request)
         return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
 
     def _make_view_html(self, view: "BaseView") -> Callable[..., Any]:

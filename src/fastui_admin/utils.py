@@ -80,6 +80,9 @@ def _extract_sa_default(column: Any) -> Any:
 
     Returns the default value if it's a simple scalar (int, str, bool, etc.),
     or None if the default is a callable, server-side default, or absent.
+
+    Note: ``server_default`` (e.g. ``text("CURRENT_TIMESTAMP")``) is intentionally
+    ignored — it cannot be meaningfully represented as a Pydantic field default.
     """
     col_default = column.default
     if col_default is None:

@@ -178,7 +178,7 @@ class TestCreateView:
         """Invalid field types return a 422 error response."""
         resp = await client.post(
             "/admin/api/users/create",
-            json={"username": "bad-types", "email": "bad@example.com", "is_active": "not-a-bool"},
+            json={"username": "bad-types", "email": "bad@example.com", "is_active": [1, 2, 3]},
         )
         assert resp.status_code == 422
         data = resp.json()
@@ -224,7 +224,7 @@ class TestEditView:
         """Invalid field types return a 422 error response."""
         resp = await seeded_client.post(
             "/admin/api/users/1/edit",
-            json={"username": "alice", "email": "alice@example.com", "is_active": "not-a-bool"},
+            json={"username": "alice", "email": "alice@example.com", "is_active": [1, 2, 3]},
         )
         assert resp.status_code == 422
         data = resp.json()

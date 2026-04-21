@@ -43,4 +43,12 @@ FastUI Admin is in early development (v0.1.0). The core CRUD functionality works
 - [ ] Reference (API) documentation
 - [ ] More examples (multi-model relationships, custom views, authentication)
 
+## Known Limitations
+
+These are accepted design trade-offs in the current implementation, not bugs. They may be addressed in future versions.
+
+- **`BaseModelView` uses raw `__tablename__` for URLs, `BaseView` uses `slugify(name)`**: SQLAlchemy table names are valid identifiers by convention, so this works in practice. Unifying the approach would require a migration path for existing routes.
+- **No guard against duplicate route names**: If two model views reference the same `__tablename__`, Starlette will raise on duplicate route names. This requires user error (two models sharing a table name) and is unlikely in practice.
+- **Mixed relative/absolute URL patterns in `GoToEvent`**: Some navigation uses relative URLs (`./edit`, `./create`) and others use absolute paths (`{self.get_url()}/`). Both work correctly with FastUI's SPA routing. Standardizing could break navigation edge cases without clear benefit.
+
 All this is intermixed with bug fixes, reviews, and community feedback.

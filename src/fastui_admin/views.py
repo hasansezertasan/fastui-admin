@@ -91,7 +91,7 @@ class AdminIndexView(BaseView):
 
                 model_links.append(
                     c.Link(
-                        components=[c.Text(text=f"{view.name}")],
+                        components=[c.Text(text=view.name)],
                         on_click=GoToEvent(url=url),
                         class_name="btn btn-outline-primary me-2 mb-2",
                     )
@@ -162,6 +162,7 @@ class BaseModelView(BaseView):
         super().__init__(admin)
 
         self._pk_name = self._get_pk_name()
+        self._columns: Optional[list[str]] = None
         self._pydantic_model: Optional[type[BaseModel]] = None
         self._form_model: Optional[type[BaseModel]] = None
 
@@ -174,7 +175,10 @@ class BaseModelView(BaseView):
         raise ValueError(msg)
 
     def _get_columns(self) -> list[str]:
-        """Get list of column names for list view."""
+        """Get list of column names for list view. Cached after first call."""
+        if self._columns is not None:
+            return self._columns
+
         mapper = sa_inspect(self.model)
         all_columns = [col.key for col in mapper.columns]
 
@@ -187,9 +191,11 @@ class BaseModelView(BaseView):
                     invalid,
                     all_columns,
                 )
-            return [col for col in self.column_list if col in all_columns]
+            self._columns = [col for col in self.column_list if col in all_columns]
+        else:
+            self._columns = [col for col in all_columns if col not in self.column_exclude_list]
 
-        return [col for col in all_columns if col not in self.column_exclude_list]
+        return self._columns
 
     def _get_pydantic_model(self) -> type[BaseModel]:
         """Get or create Pydantic model for this SQLAlchemy model."""
@@ -340,12 +346,11 @@ class BaseModelView(BaseView):
     # --- API Endpoints (return FastUI components as JSON) ---
 
     def _get_session_maker(self) -> "async_sessionmaker[AsyncSession]":
-        """Get session maker, raising if not configured."""
-        sm = self._admin.session_maker
-        if sm is None:
-            msg = "No session maker configured. Provide engine or session_maker to BaseAdmin."
-            raise RuntimeError(msg)
-        return sm
+        """Get session maker from admin.
+
+        Always available — BaseAdmin.__init__ requires engine or session_maker.
+        """
+        return self._admin.session_maker
 
     async def _list_api(self, request: Request) -> JSONResponse:
         """API endpoint returning list view components."""
@@ -567,22 +572,14 @@ class BaseModelView(BaseView):
                         status_code=404,
                     )
 
-                try:
-                    for key, value in validated.model_dump().items():
-                        setattr(item, key, value)
-                    await session.commit()
-                except SQLAlchemyError:
-                    await session.rollback()
-                    logger.exception("Error updating %s #%s", self.name, pk)
-                    return self._error_response(
-                        f"Failed to update {self.name}. Check server logs for details.",
-                        back_url=".",
-                        status_code=500,
-                    )
+                for key, value in validated.model_dump().items():
+                    setattr(item, key, value)
+                await session.commit()
         except SQLAlchemyError:
-            logger.exception("Error loading %s #%s for edit", self.name, pk)
+            logger.exception("Error updating %s #%s", self.name, pk)
             return self._error_response(
-                f"Failed to load {self.name}. Check database connection and server logs.",
+                f"Failed to update {self.name}. Check server logs for details.",
+                back_url=".",
                 status_code=500,
             )
 
