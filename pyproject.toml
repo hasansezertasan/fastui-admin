@@ -7,7 +7,7 @@ name = "fastui-admin"
 dynamic = ["version"]
 description = 'Build better Admin UIs faster.'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = "MIT"
 keywords = [
   "fastapi",
@@ -30,7 +30,6 @@ classifiers = [
   'Environment :: Web Environment',
   "Programming Language :: Python :: 3",
   'Programming Language :: Python :: 3 :: Only',
-  'Programming Language :: Python :: 3.8',
   'Programming Language :: Python :: 3.9',
   'Programming Language :: Python :: 3.10',
   'Programming Language :: Python :: 3.11',
@@ -40,7 +39,11 @@ classifiers = [
   "Framework :: Pydantic :: 2",
   "Framework :: FastAPI",
 ]
-dependencies = ["fastui>=0.6.0"]
+dependencies = [
+  "fastui>=0.6.0",
+  "fastapi>=0.100.0",
+  "sqlalchemy>=2.0.0",
+]
 
 [project.urls]
 Documentation = "https://github.com/hasansezertasan/fastui-admin#readme"
@@ -53,14 +56,13 @@ path = "src/fastui_admin/__about__.py"
 
 [tool.hatch.envs.default]
 dependencies = [
-  "coverage[toml]>=7.0.0, <7.5.0",
-  "pytest>=7.0.0, <8.0.0",
-  "pre-commit>=3.0.0, <4.0.0",
-  "fastapi[all]>=0.100",
-  "litestar>=2.0.0, <3.0.0",
-  "SQLAlchemy-Utils>=0.40.0, <0.42.0",
-  "SQLAlchemy-Mixins>=2.0.5",
-  "SQLalchemy[aiosqlite, asyncio]>=2.0.0, <3.0.0",
+  "coverage[toml]>=7.0.0",
+  "pytest>=7.0.0",
+  "pytest-asyncio>=0.21.0",
+  "httpx>=0.24.0",
+  "pre-commit>=3.0.0",
+  "aiosqlite>=0.19.0",
+  "greenlet>=3.0.0",
 ]
 [tool.hatch.envs.default.scripts]
 test = "pytest {args:tests}"
@@ -68,10 +70,10 @@ test-cov = "coverage run -m pytest {args:tests}"
 cov-report = ["- coverage combine", "coverage report"]
 cov = ["test-cov", "cov-report"]
 pre = "pre-commit run --all-files --hook-stage manual --show-diff-on-failure"
-run = "uvicorn playground.main:app --host 0.0.0.0 --port 5000 --workers 2 --reload"
+run = "uvicorn examples.basic.main:app --host 0.0.0.0 --port 5000 --reload"
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11", "3.12"]
+python = ["3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.lint]
 detached = true
@@ -83,7 +85,7 @@ fmt = ["ruff format {args:.}", "style"]
 all = ["style", "typing"]
 
 [tool.ruff]
-target-version = "py38"
+target-version = "py39"
 line-length = 120
 show-fixes = true
 fix = true
@@ -130,7 +132,6 @@ ignore = [
   "PLR0913",
   "PLR0915",
 ]
-ignore-init-module-imports = true
 
 [tool.ruff.lint.isort]
 known-first-party = ["fastui_admin"]
@@ -140,7 +141,15 @@ ban-relative-imports = "all"
 
 [tool.ruff.lint.per-file-ignores]
 # Tests can use magic values, assertions, and relative imports
+"__init__.py" = ["F401"]
 "tests/**/*" = ["PLR2004", "S101", "TID252"]
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.coverage.run]
 source_pkgs = ["fastui_admin", "tests"]
@@ -154,3 +163,13 @@ tests = ["tests", "*/fastui-admin/tests"]
 
 [tool.coverage.report]
 exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.14.1",
+    "pytest-cov>=5.0.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+    "aiosqlite>=0.19.0",
+    "greenlet>=3.0.0",
+]
