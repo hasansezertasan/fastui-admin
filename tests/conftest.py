@@ -3,8 +3,9 @@
 # SPDX-License-Identifier: MIT
 """Shared test fixtures."""
 
+from collections.abc import AsyncGenerator
 from datetime import datetime, timezone
-from typing import AsyncGenerator, ClassVar, List
+from typing import ClassVar
 
 import pytest
 import pytest_asyncio
@@ -34,7 +35,7 @@ class User(Base):
 
 class UserAdmin(BaseModelView, model=User):
     name: ClassVar[str] = "Users"
-    column_list: ClassVar[List[str]] = ["id", "username", "email", "is_active"]
+    column_list: ClassVar[list[str]] = ["id", "username", "email", "is_active"]
     page_size: ClassVar[int] = 10
 
 

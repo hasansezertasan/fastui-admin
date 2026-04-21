@@ -7,7 +7,7 @@ import logging
 import re
 from datetime import date, datetime, time
 from decimal import Decimal
-from typing import Any, Dict, List, Optional, Tuple, Type
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, create_model
 from sqlalchemy import (
@@ -30,7 +30,7 @@ from sqlalchemy.types import TypeEngine
 logger = logging.getLogger(__name__)
 
 # SQLAlchemy type to Python type mapping
-SA_TYPE_MAP: Dict[Type[TypeEngine[Any]], type] = {
+SA_TYPE_MAP: dict[type[TypeEngine[Any]], type] = {
     BigInteger: int,
     SmallInteger: int,
     Integer: int,
@@ -92,11 +92,11 @@ def _extract_sa_default(column: Any) -> Any:
 
 
 def sqlalchemy_to_pydantic(
-    model: Type[DeclarativeBase],
-    include_columns: Optional[List[str]] = None,
-    exclude_columns: Optional[List[str]] = None,
+    model: type[DeclarativeBase],
+    include_columns: Optional[list[str]] = None,
+    exclude_columns: Optional[list[str]] = None,
     for_form: bool = False,
-) -> Type[BaseModel]:
+) -> type[BaseModel]:
     """
     Generate a Pydantic model from a SQLAlchemy model.
 
@@ -115,7 +115,7 @@ def sqlalchemy_to_pydantic(
     # Get primary key column name
     pk_name = mapper.primary_key[0].name if mapper.primary_key else None
 
-    fields: Dict[str, Any] = {}
+    fields: dict[str, Any] = {}
 
     for column in mapper.columns:
         col_name = column.key
@@ -136,9 +136,9 @@ def sqlalchemy_to_pydantic(
         default_value = _extract_sa_default(column)
         title = col_name.replace("_", " ").title()
 
-        field_type: type = Optional[py_type] if is_nullable else py_type  # type: ignore[assignment]
+        field_type: Any = Optional[py_type] if is_nullable else py_type
 
-        field_info: Tuple[Any, Any]
+        field_info: tuple[Any, Any]
         if default_value is not None:
             field_info = (field_type, Field(default=default_value, title=title))
         elif is_nullable:

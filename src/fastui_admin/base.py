@@ -10,7 +10,8 @@ Warning:
 """
 
 import logging
-from typing import TYPE_CHECKING, Any, Callable, List, Optional, Sequence, Type, Union
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 from fastapi import FastAPI
 from starlette.applications import Starlette
@@ -66,7 +67,7 @@ class BaseAdmin:
         base_url: str = "/admin",
         route_name: str = "admin",
         logo_url: Optional[str] = None,
-        index_view: Optional[Type["AdminIndexView"]] = None,
+        index_view: Optional[type["AdminIndexView"]] = None,
         debug: bool = False,
     ):
         """Initialize the admin interface.
@@ -105,8 +106,8 @@ class BaseAdmin:
 
         self.layout = MasterLayout(admin=self, title=title, logo_url=logo_url)
 
-        self._views: List[BaseView] = []
-        self._model_views: List[BaseModelView] = []
+        self._views: list[BaseView] = []
+        self._model_views: list[BaseModelView] = []
 
         self._index_view_class = index_view
         self._mounted = False
@@ -168,7 +169,7 @@ class BaseAdmin:
         """All registered views (read-only for navbar)."""
         return list(self._views)
 
-    def add_view(self, view: Union[Type["BaseView"], Type["BaseModelView"]]) -> None:
+    def add_view(self, view: Union[type["BaseView"], type["BaseModelView"]]) -> None:
         """Add a view to the admin interface.
 
         Args:
@@ -228,9 +229,9 @@ class BaseAdmin:
 
         self._mounted = True
 
-    def _build_routes(self) -> List[Route]:
+    def _build_routes(self) -> list[Route]:
         """Build all routes for admin interface."""
-        routes: List[Route] = []
+        routes: list[Route] = []
 
         routes.append(Route("/", endpoint=self._index_html, name="index"))
         routes.append(Route("/api/", endpoint=self._index_api, name="index_api"))

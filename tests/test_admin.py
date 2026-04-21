@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 """Tests for BaseAdmin and BaseModelView integration."""
 
-from typing import Any, ClassVar, List, Set
+from typing import Any, ClassVar
 
 import pytest
 import pytest_asyncio
@@ -15,9 +15,9 @@ from fastui_admin import BaseAdmin, BaseModelView, BaseView
 from .conftest import User, UserAdmin
 
 
-def _find_component_types(data: Any) -> Set[str]:
+def _find_component_types(data: Any) -> set[str]:
     """Recursively extract all component 'type' values from a FastUI JSON response."""
-    types: Set[str] = set()
+    types: set[str] = set()
     if isinstance(data, dict):
         if "type" in data:
             types.add(data["type"])
@@ -46,9 +46,9 @@ def _find_pagination(data: Any) -> Any:
     return None
 
 
-def _find_all_string_values(data: Any) -> List[str]:
+def _find_all_string_values(data: Any) -> list[str]:
     """Recursively extract all string values from a JSON structure."""
-    values: List[str] = []
+    values: list[str] = []
     if isinstance(data, dict):
         for v in data.values():
             if isinstance(v, str):
@@ -314,7 +314,7 @@ class TestReadOnlyModelView:
     def readonly_app(self, engine):
         class ReadOnlyUserAdmin(BaseModelView, model=User):
             name: ClassVar[str] = "ReadOnlyUsers"
-            column_list: ClassVar[List[str]] = ["id", "username"]
+            column_list: ClassVar[list[str]] = ["id", "username"]
             can_create: ClassVar[bool] = False
             can_edit: ClassVar[bool] = False
             can_delete: ClassVar[bool] = False
@@ -447,6 +447,41 @@ class TestInvalidPageSize:
                 page_size: ClassVar[int] = 0
 
 
+class TestInvalidColumnList:
+    """Test that invalid column names in column_list are filtered out with warning."""
+
+    @pytest.fixture()
+    def invalid_col_app(self, engine):
+        class InvalidColUserAdmin(BaseModelView, model=User):
+            name: ClassVar[str] = "InvalidColUsers"
+            column_list: ClassVar[list[str]] = ["id", "username", "nonexistent_col"]
+
+        app = FastAPI()
+        admin = BaseAdmin(app=app, engine=engine, title="Invalid Col Admin")
+        admin.add_view(InvalidColUserAdmin)
+        admin.mount()
+        return app
+
+    @pytest_asyncio.fixture()
+    async def invalid_col_client(self, invalid_col_app, setup_db):  # noqa: ARG002
+        transport = ASGITransport(app=invalid_col_app)
+        async with AsyncClient(transport=transport, base_url="http://test") as ac:
+            yield ac
+
+    async def test_invalid_columns_filtered_out(self, invalid_col_client):
+        """Invalid column names are silently filtered; valid ones still render."""
+        resp = await invalid_col_client.get("/admin/api/users/")
+        assert resp.status_code == 200
+        data = resp.json()
+        texts = _find_all_string_values(data)
+        # Valid columns should appear
+        assert any("Id" in t or "id" in t for t in texts)
+        assert any("Username" in t or "username" in t for t in texts)
+        # Invalid column should not appear
+        assert "nonexistent_col" not in texts
+        assert "Nonexistent Col" not in texts
+
+
 class TestColumnExcludeList:
     """Test column_exclude_list filtering."""
 
@@ -454,7 +489,7 @@ class TestColumnExcludeList:
     def exclude_app(self, engine):
         class ExcludeUserAdmin(BaseModelView, model=User):
             name: ClassVar[str] = "ExcludeUsers"
-            column_exclude_list: ClassVar[List[str]] = ["created_at", "is_active"]
+            column_exclude_list: ClassVar[list[str]] = ["created_at", "is_active"]
 
         app = FastAPI()
         admin = BaseAdmin(app=app, engine=engine, title="Exclude Admin")
