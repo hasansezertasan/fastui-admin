@@ -84,7 +84,7 @@ class AdminIndexView(BaseView):
 
     async def render(self, request: Request) -> list[c.AnyComponent]:  # noqa: ARG002
         """Render dashboard with welcome message and links to model views."""
-        model_links = []
+        model_links: list[c.AnyComponent] = []
         for view in self._admin.views:
             if view.is_visible and view != self and isinstance(view, BaseModelView):
                 url = self._admin.get_relative_url(view.get_url())
