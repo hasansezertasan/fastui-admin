@@ -77,7 +77,7 @@ python = ["3.9", "3.10", "3.11", "3.12"]
 
 [tool.hatch.envs.lint]
 detached = true
-dependencies = ["mypy>=1.8.0", "ruff>=0.4.3"]
+dependencies = ["mypy>=1.8.0", "ruff>=0.16.0"]
 [tool.hatch.envs.lint.scripts]
 typing = "mypy --install-types --non-interactive {args:src/fastui_admin tests}"
 style = ["ruff check {args:.}"]
@@ -130,6 +130,8 @@ ignore = [
   "PLR0911",
   "PLR0912",
   "PLR0913",
+  # PLR0917 supersedes part of PLR0913 in newer Ruff releases.
+  "PLR0917",
   "PLR0915",
 ]
 
