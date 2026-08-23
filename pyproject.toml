@@ -130,6 +130,8 @@ ignore = [
   "PLR0911",
   "PLR0912",
   "PLR0913",
+  # PLR0917 supersedes part of PLR0913 in newer Ruff releases.
+  "PLR0917",
   "PLR0915",
 ]
 
