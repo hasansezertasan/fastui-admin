@@ -163,7 +163,7 @@ Comparison with [Flask-Admin](https://github.com/flask-admin/flask-admin) and [S
 
 ## Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for the full feature roadmap, including planned support for column sorting, search/filtering, authentication, export, and more.
+See the [Roadmap issue](https://github.com/hasansezertasan/fastui-admin/issues/5) for the full feature roadmap, including planned support for column sorting, search/filtering, authentication, export, and more.
 
 ## Related
 
