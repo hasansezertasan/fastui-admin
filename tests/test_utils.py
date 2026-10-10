@@ -6,7 +6,19 @@
 from datetime import date, datetime
 
 from pydantic import BaseModel
-from sqlalchemy import Boolean, Column, Date, DateTime, Float, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    Column,
+    Date,
+    DateTime,
+    Float,
+    Integer,
+    Sequence,
+    String,
+    Text,
+)
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.types import TypeEngine
 
 from fastui_admin.utils import (
     _extract_sa_default,
@@ -15,62 +27,108 @@ from fastui_admin.utils import (
     sqlalchemy_to_pydantic,
 )
 
-from .conftest import User
+from .conftest import Base, User
+
+
+class NullableWidget(Base):
+    """Sample model with a nullable column."""
+
+    __tablename__ = "widgets"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    label: Mapped[str | None] = mapped_column(String(50))
 
 
 class TestGetPythonType:
-    def test_integer(self):
+    """Verify get_python_type mappings."""
+
+    @staticmethod
+    def test_integer() -> None:
+        """Verify integer maps to int."""
         assert get_python_type(Integer()) is int
 
-    def test_string(self):
+    @staticmethod
+    def test_string() -> None:
+        """Verify string maps to str."""
         assert get_python_type(String(50)) is str
 
-    def test_text(self):
+    @staticmethod
+    def test_text() -> None:
+        """Verify text maps to str."""
         assert get_python_type(Text()) is str
 
-    def test_boolean(self):
+    @staticmethod
+    def test_boolean() -> None:
+        """Verify boolean maps to bool."""
         assert get_python_type(Boolean()) is bool
 
-    def test_float(self):
+    @staticmethod
+    def test_float() -> None:
+        """Verify float maps to float."""
         assert get_python_type(Float()) is float
 
-    def test_datetime(self):
+    @staticmethod
+    def test_datetime() -> None:
+        """Verify datetime maps to datetime."""
         assert get_python_type(DateTime()) is datetime
 
-    def test_date(self):
+    @staticmethod
+    def test_date() -> None:
+        """Verify date maps to date."""
         assert get_python_type(Date()) is date
 
-    def test_unknown_defaults_to_str(self):
-        class CustomType:
-            pass
+    @staticmethod
+    def test_unknown_defaults_to_str() -> None:
+        """Verify unknown types default to str."""
+
+        class CustomType(TypeEngine):
+            """Unmapped SQLAlchemy type for fallback coverage."""
 
         assert get_python_type(CustomType()) is str
 
 
 class TestSlugify:
-    def test_normalizes_spaces_and_case(self):
+    """Verify slugify normalization."""
+
+    @staticmethod
+    def test_normalizes_spaces_and_case() -> None:
+        """Verify spaces collapse and case folds."""
         assert slugify("  Hello  World  ") == "hello-world"
 
-    def test_strips_punctuation_and_collapses_hyphens(self):
+    @staticmethod
+    def test_strips_punctuation_and_collapses_hyphens() -> None:
+        """Verify punctuation strips and hyphens collapse."""
         assert slugify("Hello, world!!! -- test") == "hello-world-test"
 
-    def test_strips_leading_and_trailing_hyphens(self):
+    @staticmethod
+    def test_strips_leading_and_trailing_hyphens() -> None:
+        """Verify leading and trailing hyphens strip."""
         assert slugify("---Hello---") == "hello"
 
-    def test_simple_name(self):
+    @staticmethod
+    def test_simple_name() -> None:
+        """Verify a simple name slugifies."""
         assert slugify("Audit Logs") == "audit-logs"
 
-    def test_already_slug(self):
+    @staticmethod
+    def test_already_slug() -> None:
+        """Verify an existing slug stays unchanged."""
         assert slugify("already-good") == "already-good"
 
 
 class TestSqlalchemyToPydantic:
-    def test_creates_pydantic_model(self):
+    """Verify sqlalchemy_to_pydantic conversion."""
+
+    @staticmethod
+    def test_creates_pydantic_model() -> None:
+        """Verify conversion creates a pydantic model."""
         model = sqlalchemy_to_pydantic(User)
         assert issubclass(model, BaseModel)
         assert "UserSchema" in model.__name__
 
-    def test_includes_all_columns_by_default(self):
+    @staticmethod
+    def test_includes_all_columns_by_default() -> None:
+        """Verify all columns are included by default."""
         model = sqlalchemy_to_pydantic(User)
         fields = set(model.model_fields.keys())
         assert "id" in fields
@@ -79,39 +137,69 @@ class TestSqlalchemyToPydantic:
         assert "is_active" in fields
         assert "created_at" in fields
 
-    def test_include_columns(self):
+    @staticmethod
+    def test_include_columns() -> None:
+        """Verify include_columns restricts fields."""
         model = sqlalchemy_to_pydantic(User, include_columns=["id", "username"])
         fields = set(model.model_fields.keys())
         assert fields == {"id", "username"}
 
-    def test_exclude_columns(self):
+    @staticmethod
+    def test_exclude_columns() -> None:
+        """Verify exclude_columns removes fields."""
         model = sqlalchemy_to_pydantic(User, exclude_columns=["created_at"])
         fields = set(model.model_fields.keys())
         assert "created_at" not in fields
 
-    def test_for_form_excludes_pk(self):
+    @staticmethod
+    def test_for_form_excludes_pk() -> None:
+        """Verify for_form excludes the primary key."""
         model = sqlalchemy_to_pydantic(User, for_form=True)
         fields = set(model.model_fields.keys())
         assert "id" not in fields
 
-    def test_from_attributes_config(self):
+    @staticmethod
+    def test_from_attributes_config() -> None:
+        """Verify from_attributes is enabled."""
         model = sqlalchemy_to_pydantic(User)
         assert model.model_config.get("from_attributes") is True
 
+    @staticmethod
+    def test_nullable_column_defaults_to_none() -> None:
+        """Verify nullable columns without defaults allow None."""
+        model = sqlalchemy_to_pydantic(NullableWidget)
+        assert model.model_fields["label"].is_required() is False
+
 
 class TestExtractSaDefault:
-    def test_column_without_default(self):
+    """Verify _extract_sa_default extraction."""
+
+    @staticmethod
+    def test_column_without_default() -> None:
+        """Verify a column without default returns None."""
         col = Column("test", Integer)
         assert _extract_sa_default(col) is None
 
-    def test_column_with_scalar_default(self):
+    @staticmethod
+    def test_column_with_scalar_default() -> None:
+        """Verify a scalar default is extracted."""
         col = Column("status", String(20), default="pending")
         assert _extract_sa_default(col) == "pending"
 
-    def test_column_with_callable_default_returns_none(self):
+    @staticmethod
+    def test_column_with_callable_default_returns_none() -> None:
+        """Verify a callable default returns None."""
         col = Column("created", DateTime, default=datetime.now)
         assert _extract_sa_default(col) is None
 
-    def test_column_with_boolean_default(self):
+    @staticmethod
+    def test_column_with_boolean_default() -> None:
+        """Verify a boolean default is extracted."""
         col = Column("active", Boolean, default=True)
         assert _extract_sa_default(col) is True
+
+    @staticmethod
+    def test_column_with_sequence_default_returns_none() -> None:
+        """Verify a non-ColumnDefault default returns None."""
+        col = Column("seq", Integer, Sequence("seq_seq"))
+        assert _extract_sa_default(col) is None

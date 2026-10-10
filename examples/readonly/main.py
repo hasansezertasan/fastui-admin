@@ -13,10 +13,9 @@ Then visit:
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from fastapi import FastAPI
 from sqlalchemy import DateTime, Float, Integer, String, select
@@ -25,11 +24,14 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from fastui_admin import BaseAdmin, BaseModelView
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
 # --- Model ---
 
 
 class Base(DeclarativeBase):
-    pass
+    """Base class for all models."""
 
 
 class AuditLog(Base):
@@ -41,7 +43,9 @@ class AuditLog(Base):
     action: Mapped[str] = mapped_column(String(50))
     user: Mapped[str] = mapped_column(String(100))
     detail: Mapped[str] = mapped_column(String(500))
-    timestamp: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class Product(Base):
@@ -59,6 +63,8 @@ class Product(Base):
 
 
 class AuditLogAdmin(BaseModelView, model=AuditLog):
+    """Admin view for AuditLog model."""
+
     name: ClassVar[str] = "Audit Logs"
     column_list: ClassVar[list[str]] = ["id", "action", "user", "detail", "timestamp"]
     can_create: ClassVar[bool] = False
@@ -67,6 +73,8 @@ class AuditLogAdmin(BaseModelView, model=AuditLog):
 
 
 class ProductAdmin(BaseModelView, model=Product):
+    """Admin view for Product model."""
+
     name: ClassVar[str] = "Products"
     column_list: ClassVar[list[str]] = ["id", "name", "price", "sku"]
     can_delete: ClassVar[bool] = False
@@ -79,6 +87,7 @@ engine = create_async_engine("sqlite+aiosqlite:///./example.db", echo=True)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
+    """Initialize database on startup."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     yield
@@ -94,23 +103,25 @@ admin.mount()
 
 @app.post("/seed")
 async def seed_data() -> dict:
-    """Seed sample data."""
+    """Seed sample data.
+
+    Returns:
+        Status message dictionary.
+    """
     session_maker = async_sessionmaker(engine, class_=AsyncSession)
     async with session_maker() as session:
         result = await session.execute(select(AuditLog))
         if result.first():
             return {"message": "Data already exists"}
 
-        session.add_all(
-            [
-                AuditLog(action="login", user="alice", detail="Logged in from 192.168.1.1"),
-                AuditLog(action="create", user="alice", detail="Created product SKU-001"),
-                AuditLog(action="login", user="bob", detail="Logged in from 10.0.0.5"),
-                Product(name="Widget", price=9.99, sku="SKU-001"),
-                Product(name="Gadget", price=24.99, sku="SKU-002"),
-                Product(name="Doohickey", price=4.50, sku="SKU-003"),
-            ]
-        )
+        session.add_all([
+            AuditLog(action="login", user="alice", detail="Logged in from 192.168.1.1"),
+            AuditLog(action="create", user="alice", detail="Created product SKU-001"),
+            AuditLog(action="login", user="bob", detail="Logged in from 10.0.0.5"),
+            Product(name="Widget", price=9.99, sku="SKU-001"),
+            Product(name="Gadget", price=24.99, sku="SKU-002"),
+            Product(name="Doohickey", price=4.50, sku="SKU-003"),
+        ])
         await session.commit()
 
     return {"message": "Seed data created"}

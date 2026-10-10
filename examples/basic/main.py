@@ -13,10 +13,9 @@ Then visit:
 
 from __future__ import annotations
 
-from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from fastapi import FastAPI
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, select
@@ -25,13 +24,14 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from fastui_admin import BaseAdmin, BaseModelView
 
+if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
 # --- Database Models ---
 
 
 class Base(DeclarativeBase):
     """Base class for all models."""
-
-    pass
 
 
 class User(Base):
@@ -43,7 +43,9 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True)
     email: Mapped[str] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc)
+    )
 
     posts: Mapped[list[Post]] = relationship(back_populates="author")
 
@@ -58,7 +60,9 @@ class Post(Base):
     content: Mapped[str] = mapped_column(Text)
     published: Mapped[bool] = mapped_column(Boolean, default=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc)
+    )
 
     author: Mapped[User] = relationship(back_populates="posts")
 
@@ -82,7 +86,13 @@ class UserAdmin(BaseModelView, model=User):
     """Admin view for User model."""
 
     name: ClassVar[str] = "Users"
-    column_list: ClassVar[list[str]] = ["id", "username", "email", "is_active", "created_at"]
+    column_list: ClassVar[list[str]] = [
+        "id",
+        "username",
+        "email",
+        "is_active",
+        "created_at",
+    ]
     page_size: ClassVar[int] = 25
 
 
@@ -90,7 +100,13 @@ class PostAdmin(BaseModelView, model=Post):
     """Admin view for Post model."""
 
     name: ClassVar[str] = "Posts"
-    column_list: ClassVar[list[str]] = ["id", "title", "published", "author_id", "created_at"]
+    column_list: ClassVar[list[str]] = [
+        "id",
+        "title",
+        "published",
+        "author_id",
+        "created_at",
+    ]
     page_size: ClassVar[int] = 25
 
 
@@ -109,12 +125,7 @@ app = FastAPI(title="FastUI Admin Example", lifespan=lifespan)
 
 # --- Admin Setup ---
 
-admin = BaseAdmin(
-    app=app,
-    engine=engine,
-    title="My Admin",
-    base_url="/admin",
-)
+admin = BaseAdmin(app=app, engine=engine, title="My Admin", base_url="/admin")
 
 admin.add_view(UserAdmin)
 admin.add_view(PostAdmin)
@@ -126,7 +137,11 @@ admin.mount()
 
 @app.post("/seed")
 async def seed_data() -> dict[str, str]:
-    """Seed database with sample data."""
+    """Seed database with sample data.
+
+    Returns:
+        Status message dictionary.
+    """
     session_maker = async_sessionmaker(engine, class_=AsyncSession)
     async with session_maker() as session:
         # Check if data already exists
@@ -179,7 +194,11 @@ async def seed_data() -> dict[str, str]:
 
 @app.get("/")
 async def root() -> dict[str, str]:
-    """Redirect info for root path."""
+    """Redirect info for root path.
+
+    Returns:
+        Welcome message with admin and seed URLs.
+    """
     return {
         "message": "Welcome! Visit /admin/ for the admin interface.",
         "admin_url": "/admin/",
