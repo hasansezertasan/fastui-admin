@@ -784,7 +784,7 @@ dev = [
     { name = "editorconfig-checker", specifier = "==3.8.0" },
     { name = "greenlet", specifier = "==3.5.6" },
     { name = "httpx", specifier = "==0.28.1" },
-    { name = "import-linter", specifier = "==2.13" },
+    { name = "import-linter", specifier = "==2.15" },
     { name = "inline-snapshot" },
     { name = "mypy", specifier = "==2.3.0" },
     { name = "pylint", specifier = "==4.0.6" },
@@ -810,7 +810,7 @@ style = [
     { name = "basedpyright", specifier = "==1.40.2" },
     { name = "detect-secrets", specifier = "==1.5.0" },
     { name = "editorconfig-checker", specifier = "==3.8.0" },
-    { name = "import-linter", specifier = "==2.13" },
+    { name = "import-linter", specifier = "==2.15" },
     { name = "mypy", specifier = "==2.3.0" },
     { name = "pylint", specifier = "==4.0.6" },
     { name = "pyrefly", specifier = "==1.2.0" },
@@ -1101,7 +1101,7 @@ wheels = [
 
 [[package]]
 name = "import-linter"
-version = "2.13"
+version = "2.15"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1110,9 +1110,9 @@ dependencies = [
     { name = "tomli", marker = "python_full_version < '3.11'" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/c6/42962eb043df4d6984c1540220735b20442572fe37dab5e65ac807c939b9/import_linter-2.13.tar.gz", hash = "sha256:13af4a1d6b06044c58ea784e8732fd7fe48eec821a75feb4d6a1a2de36dd5c27", size = 1279761, upload-time = "2026-07-03T14:00:31.285Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3c/81/1bb414f8c8bcd024499e91f112d317c36a86bc264da1fd43f9797fc2b7b0/import_linter-2.15.tar.gz", hash = "sha256:1da912bea5e172a82a3ce617b5543f75cf64dc0d8f4d9b46c5578b68ccb81590", size = 1405973, upload-time = "2026-09-04T14:47:56.097Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/88/13/e7725e6eb32607fd4af51ccf3edfe835826e5cdf783b4d7fdc8f459196ae/import_linter-2.13-py3-none-any.whl", hash = "sha256:c0372e7ee5e15657bc06a8e841445e13237afd738a672d26863dc927af9f0bf5", size = 638185, upload-time = "2026-07-03T14:00:29.676Z" },
+    { url = "https://files.pythonhosted.org/packages/08/31/4571c20652a4002ed9e500046386f3731a77e23d95a608ae8a87f1fbb2da/import_linter-2.15-py3-none-any.whl", hash = "sha256:9aaf16a88ac1e99d5a464cd7f66b6a05f7060bfa761162e0ed441773a267ed3b", size = 640512, upload-time = "2026-09-04T14:47:54.878Z" },
 ]
 
 [[package]]
