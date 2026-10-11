@@ -29,6 +29,6 @@ jobs:
         # (uvx) when uv is on PATH, and uv resolves Python 3.14 for cobo
         # (which requires >=3.14). Without uv it falls back to pipx with the
         # system Python and the install fails. Mirrors the CI hooks job order.
-        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c  # v4.3.0
+        uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca  # v5.1.1
       - name: Sync dependencies
         run: uv sync
