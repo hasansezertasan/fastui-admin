@@ -8,7 +8,7 @@ documentation:
 # packages they do not contain.
 area:core:
   - changed-files:
-      - any-glob-to-any-file: ['src/fastui_admin/core/**', 'src/fastui_admin/utils/**', 'tests/core/**', 'tests/test_*.py']
+      - any-glob-to-any-file: ['src/fastui_admin/**', 'tests/test_*.py']
 area:docs:
   - changed-files:
       - any-glob-to-any-file: ['docs/**', '**/*.md', '**/*.rst']
