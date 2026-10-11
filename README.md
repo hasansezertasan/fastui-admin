@@ -1,9 +1,23 @@
-# FastUI Admin
+# fastui_admin
 
-[![CI](https://github.com/hasansezertasan/FastUI-Admin/actions/workflows/ci.yml/badge.svg)](https://github.com/hasansezertasan/FastUI-Admin/actions?query=event%3Apush+branch%3Amain+workflow%3ACI)
-[![pypi](https://img.shields.io/pypi/v/fastui-admin.svg)](https://pypi.python.org/pypi/fastui-admin)
-[![versions](https://img.shields.io/pypi/pyversions/fastui-admin.svg)](https://github.com/hasansezertasan/FastUI-Admin)
-[![license](https://img.shields.io/github/license/hasansezertasan/FastUI-Admin.svg)](https://github.com/hasansezertasan/FastUI-Admin/blob/main/LICENSE)
+[![CI](https://github.com/hasansezertasan/fastui-admin/actions/workflows/ci.yml/badge.svg)](https://github.com/hasansezertasan/fastui-admin/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/hasansezertasan/fastui-admin)](https://codecov.io/gh/hasansezertasan/fastui-admin)
+[![PyPI - Version](https://img.shields.io/pypi/v/fastui-admin.svg)](https://pypi.org/project/fastui-admin)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fastui-admin.svg)](https://pypi.org/project/fastui-admin)
+[![License - MIT](https://img.shields.io/github/license/hasansezertasan/fastui-admin.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Stars](https://img.shields.io/github/stars/hasansezertasan/fastui-admin?style=social)](https://github.com/hasansezertasan/fastui-admin/stargazers)
+[![Latest Commit](https://img.shields.io/github/last-commit/hasansezertasan/fastui-admin)](https://github.com/hasansezertasan/fastui-admin)
+
+[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
+[![linting - Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/charliermarsh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/hasansezertasan/fastui-admin/badge)](https://scorecard.dev/viewer/?uri=github.com/hasansezertasan/fastui-admin)
+[![GitHub Tag](https://img.shields.io/github/tag/hasansezertasan/fastui-admin?include_prereleases=&sort=semver&color=black)](https://github.com/hasansezertasan/fastui-admin/releases/)
+
+[![Downloads](https://pepy.tech/badge/fastui-admin)](https://pepy.tech/project/fastui-admin)
+[![Downloads/Month](https://pepy.tech/badge/fastui-admin/month)](https://pepy.tech/project/fastui-admin)
+[![Downloads/Week](https://pepy.tech/badge/fastui-admin/week)](https://pepy.tech/project/fastui-admin)
+
+> Build better Admin UIs faster.
 
 Build admin interfaces for [FastAPI](https://fastapi.tiangolo.com/) applications using [FastUI](https://github.com/pydantic/FastUI) and [SQLAlchemy](https://www.sqlalchemy.org/).
 
@@ -11,17 +25,39 @@ Inspired by [Flask-Admin](https://github.com/flask-admin/flask-admin) and [SQLAd
 
 > **Note:** FastUI Admin is an active work in progress. The API may change as the project matures alongside FastUI.
 
-## Features
+-----
 
-- Automatic CRUD interface for SQLAlchemy models
-- List view with pagination
-- Detail, create, edit, and delete views
-- Auto-generated forms from model columns
-- Navigation bar with registered model views
-- Configurable columns, page size, and permissions
-- Mounts as a sub-application on FastAPI or Starlette
+## Table of Contents
+
+- [Installation](#installation)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Examples](#examples)
+- [Feature Parity](#feature-parity)
+- [Roadmap](#roadmap)
+- [Related](#related)
+- [Support](#support-heart)
+- [Motivation](#motivation)
+- [About](#about)
+- [Author](#author-person_with_crown)
+- [Analysis](#analysis)
+- [Contributing](#contributing-heart)
+- [Development](#development-toolbox)
+- [Releasing](#releasing)
+- [Credits](#credits)
+- [License](#license-scroll)
+- [Changelog](#changelog-memo)
 
 ## Installation
+
+`fastui_admin` is a library. Add it to your project as a dependency:
+
+```console
+uv add fastui-admin
+```
+
+Or with `pip`:
 
 ```console
 pip install fastui-admin
@@ -32,6 +68,36 @@ For async SQLite support (used in examples):
 ```console
 pip install aiosqlite greenlet
 ```
+
+### Verify the installation
+
+The package root is importable after installation:
+
+```pycon
+>>> from fastui_admin import __doc__
+>>> isinstance(__doc__, str)
+True
+
+```
+
+<!--
+pytest runs the pycon examples in this file (--doctest-glob=README.md).
+doctest cannot see Markdown and ends an example's expected output at the first
+blank line, so leave a blank line before every closing fence -- as the example
+above does. Without it the closing delimiter is read as part of the expected
+output and the example fails ("Expected: 2 / Got: 2"). Examples with no output
+line at all need the blank line too.
+-->
+
+## Features
+
+- Automatic CRUD interface for SQLAlchemy models
+- List view with pagination
+- Detail, create, edit, and delete views
+- Auto-generated forms from model columns
+- Navigation bar with registered model views
+- Configurable columns, page size, and permissions
+- Mounts as a sub-application on FastAPI or Starlette
 
 ## Quick Start
 
@@ -105,11 +171,11 @@ Run the app and visit `http://localhost:8000/admin/`.
 
 ## Examples
 
-See the [examples/basic](examples/basic/) directory for a complete working example with User and Post models.
+See the [examples/simple](examples/simple/) directory for a complete working example with User and Post models.
 
 ```bash
 # Run the example
-uvicorn examples.basic.main:app --port 5000
+uvicorn examples.simple.main:app --port 5000
 
 # Seed sample data
 curl -X POST http://localhost:5000/seed
@@ -172,10 +238,71 @@ See the [Roadmap issue](https://github.com/hasansezertasan/fastui-admin/issues/5
 - [SQLAdmin](https://github.com/aminalaee/sqladmin) - Admin interface for SQLAlchemy (Jinja2-based)
 - [Flask-Admin](https://github.com/flask-admin/flask-admin) - Admin interface for Flask
 
+## Support :heart:
+
+If you have any questions or need help, feel free to open an issue on the [GitHub repository][fastui_admin].
+
+## Motivation
+
+Existing SQLAlchemy admin interfaces render server-side HTML. FastUI Admin brings the same ModelView ergonomics — list, detail, create, edit, and delete views with configurable columns and page size — to [FastUI](https://github.com/pydantic/FastUI)-based [FastAPI](https://fastapi.tiangolo.com/) applications, mounting as a sub-application on FastAPI or Starlette.
+
+## About
+
+FastUI Admin provides an automatic CRUD interface for SQLAlchemy models (sync and async), with auto-generated forms from model columns, a navigation bar with registered model views, and configurable columns, page size, and permissions.
+
+## Author :person_with_crown:
+
+This project is maintained by [Hasan Sezer Taşan][author], It's me :wave:
+
+## Analysis
+
+- [Snyk Python Package Health Analysis](https://snyk.io/advisor/python/fastui-admin)
+- [Libraries.io - PyPI](https://libraries.io/pypi/fastui-admin)
+- [Safety DB](https://data.safetycli.com/packages/pypi/fastui-admin)
+- [PePy Download Stats](https://www.pepy.tech/projects/fastui-admin)
+- [PyPI Download Stats](https://pypistats.org/packages/fastui-admin)
+- [Pip Trends Download Stats](https://piptrends.com/package/fastui-admin)
+- [PyPI Map Dependency Graph](https://pypimap.com/package/fastui-admin)
+
+## Contributing :heart:
+
+Any contributions are welcome! Please follow the [Contributing Guidelines](./.github/CONTRIBUTING.md) to contribute to this project.
+
+## Development :toolbox:
+
+See the [Contributing Guidelines](./.github/CONTRIBUTING.md#your-first-code-contribution)
+for local setup, the common development tasks (exposed via [mise](https://mise.jdx.dev)),
+building and previewing the documentation, and the VS Code debugging configurations.
+
+## Releasing
+
+Versioning and releases are automated with [release-please](https://github.com/googleapis/release-please), driven by [Conventional Commit](https://www.conventionalcommits.org/en/v1.0.0/) PR titles squash-merged into `main`. release-please maintains a release PR that bumps the version and `CHANGELOG.md`; merging it tags the release and publishes to PyPI. See the [Contributing Guidelines](./.github/CONTRIBUTING.md#releasing) for the commit conventions, and the [Repository setup](./docs/maintaining/setup.rst) guide for one-time configuration and optional post-launch integrations such as a social preview, downstream packaging, and Repology.
+
+Pause merges that change `.github/workflows/`, including Renovate action-pin updates, from merging a release PR until the entire Release run finishes. Workflow differences between the release commit and current `main` can block tag or release creation with a 403 when using `GITHUB_TOKEN`. See [Release recovery](./docs/maintaining/setup.rst#keep-workflow-changes-out-of-an-active-release) for prevention and recovery steps.
+
+For adoption or template-update reconciliation, ask your agent to "audit this
+template adoption/update against our existing project behavior".
+The shipped [template-adoption skill](./.claude/skills/template-adoption/SKILL.md)
+also supports audits after an update was applied. It compares workflow behavior,
+required checks, custom tooling, and documentation, and asks before consequential
+cleanup. Its prek-workflow example shows why duplicate commands alone do not
+justify removing a workflow. Use the sibling `repo-setup` skill for repository
+settings and release setup.
+
 ## Credits
 
 Vibe coded by [Claude Opus 4.5](https://claude.ai), reviewed and tested by [@hasansezertasan](https://github.com/hasansezertasan).
 
-## License
+This package was created with [Copier](https://github.com/copier-org/copier) and the [hasansezertasan/copier-pyproject](https://github.com/hasansezertasan/copier-pyproject) project template.
+
+## License :scroll:
 
 `fastui-admin` is distributed under the terms of the [MIT](https://spdx.org/licenses/MIT.html) license.
+
+## Changelog :memo:
+
+For a detailed list of changes, please refer to the [CHANGELOG](./CHANGELOG.md).
+
+<!-- Refs -->
+[author]: https://github.com/hasansezertasan
+[fastui_admin]: https://github.com/hasansezertasan/fastui-admin
