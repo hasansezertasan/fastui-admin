@@ -2,10 +2,10 @@
 #
 # SPDX-License-Identifier: MIT
 """
-Basic FastUI Admin example with User and Post models.
+Simple FastUI Admin example with User and Post models.
 
 Run with:
-    uvicorn examples.basic.main:app --reload --port 5000
+    uvicorn examples.simple.main:app --reload --port 5000
 
 Then visit:
     http://localhost:5000/admin/

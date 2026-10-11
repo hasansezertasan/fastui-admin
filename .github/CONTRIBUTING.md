@@ -168,9 +168,9 @@ before it starts work, which installs this same toolchain and syncs dependencies
 in its ephemeral environment. The first sync creates `uv.lock` for a newly
 generated project.
 
-Project-specific notes: the `examples/basic` app runs on async SQLite
+Project-specific notes: the `examples/simple` app runs on async SQLite
 (`aiosqlite` + `greenlet`, already in the dev dependencies). Run it with
-`uv run --locked uvicorn examples.basic.main:app --port 5000`, then visit
+`uv run --locked uvicorn examples.simple.main:app --port 5000`, then visit
 `http://localhost:5000/admin/`. No external services or env vars needed.
 
 ### Debugging
