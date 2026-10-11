@@ -25,7 +25,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from fastui_admin import BaseAdmin, BaseModelView
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncGenerator
 
 # --- Model ---
 
@@ -86,7 +86,7 @@ engine = create_async_engine("sqlite+aiosqlite:///./example.db", echo=True)
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     """Initialize database on startup."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
