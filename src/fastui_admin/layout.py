@@ -7,12 +7,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from fastui import components as c
-from fastui import prebuilt_html
+from fastui import components as c, prebuilt_html
 from fastui.events import GoToEvent
 
 if TYPE_CHECKING:
-    from fastui_admin.base import BaseAdmin
+    from fastui_admin.utils import AdminProtocol
+
+__all__ = ["MasterLayout"]
 
 
 class MasterLayout:
@@ -22,14 +23,12 @@ class MasterLayout:
     """
 
     def __init__(
-        self,
-        admin: BaseAdmin,
-        title: str = "Admin",
-        logo_url: str | None = None,
-    ):
-        self._admin = admin
-        self.title = title
-        self.logo_url = logo_url
+        self, admin: AdminProtocol, title: str = "Admin", logo_url: str | None = None
+    ) -> None:
+        """Initialize the layout manager."""
+        self._admin: AdminProtocol = admin
+        self.title: str = title
+        self.logo_url: str | None = logo_url
 
     def get_prebuilt_html(
         self,
@@ -39,7 +38,13 @@ class MasterLayout:
         api_path_mode: Literal["append", "query"] | None = None,
         api_path_strip: str | None = None,
     ) -> str:
-        """Get FastUI prebuilt HTML for serving the SPA shell that loads the React frontend."""
+        """Get FastUI prebuilt HTML for the SPA shell.
+
+        Serve the SPA shell that loads the React frontend.
+
+        Returns:
+            Rendered HTML string.
+        """
         return prebuilt_html(
             title=title or self.title,
             api_root_url=api_root_url,
@@ -48,11 +53,19 @@ class MasterLayout:
         )
 
     def page_title(self, text: str | None = None) -> c.PageTitle:
-        """Create page title component."""
+        """Create page title component.
+
+        Returns:
+            Page title component.
+        """
         return c.PageTitle(text=text or self.title)
 
     def navbar(self) -> c.Navbar:
-        """Build navigation bar with links to all visible views."""
+        """Build navigation bar with links to all visible views.
+
+        Returns:
+            Navigation bar component.
+        """
         start_links: list[c.Link] = []
 
         for view in self._admin.views:
@@ -68,30 +81,31 @@ class MasterLayout:
                 )
 
         return c.Navbar(
-            title=self.title,
-            title_event=GoToEvent(url="/"),
-            start_links=start_links,
+            title=self.title, title_event=GoToEvent(url="/"), start_links=start_links
         )
 
-    def footer(self) -> c.Footer:
-        """Build footer component."""
-        return c.Footer(
-            extra_text="Powered by FastUI Admin",
-            links=[],
-        )
+    @staticmethod
+    def footer() -> c.Footer:
+        """Build footer component.
 
-    def page(self, *components: c.AnyComponent) -> c.Page:
-        """Wrap components in a Page container."""
+        Returns:
+            Footer component.
+        """
+        return c.Footer(extra_text="Powered by FastUI Admin", links=[])
+
+    @staticmethod
+    def page(*components: c.AnyComponent) -> c.Page:
+        """Wrap components in a Page container.
+
+        Returns:
+            Page container component.
+        """
         return c.Page(components=list(components))
 
     def render(self, *components: c.AnyComponent) -> list[c.AnyComponent]:
         """Render full page with navbar, content, and footer.
 
-        Returns a list of components ready to be serialized as JSON response.
+        Returns:
+            Components ready to be serialized as JSON response.
         """
-        return [
-            self.page_title(),
-            self.navbar(),
-            self.page(*components),
-            self.footer(),
-        ]
+        return [self.page_title(), self.navbar(), self.page(*components), self.footer()]

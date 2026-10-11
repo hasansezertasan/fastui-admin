@@ -12,13 +12,13 @@ Warning:
     CSRF protection before deploying to production.
 """
 
+from __future__ import annotations
+
 import logging
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Callable, Optional, Union
+from typing import TYPE_CHECKING
 
 from fastapi import FastAPI
 from starlette.applications import Starlette
-from starlette.requests import Request
 from starlette.responses import HTMLResponse, JSONResponse
 from starlette.routing import Mount, Route
 
@@ -26,9 +26,15 @@ from fastui_admin.layout import MasterLayout
 from fastui_admin.utils import slugify
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable, Sequence
+
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
+    from starlette.requests import Request
 
     from fastui_admin.views import AdminIndexView, BaseModelView, BaseView
+
+__all__ = ["BaseAdmin"]
+
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +57,11 @@ class BaseAdmin:
         app = FastAPI()
         engine = create_async_engine("sqlite+aiosqlite:///./db.sqlite")
 
+
         class UserAdmin(BaseModelView, model=User):
             name = "Users"
             column_list = ["id", "username", "email"]
+
 
         admin = BaseAdmin(app, engine, title="My Admin")
         admin.add_view(UserAdmin)
@@ -61,30 +69,37 @@ class BaseAdmin:
         ```
     """
 
-    def __init__(
+    # pylint: disable=too-many-instance-attributes  # config façade: one attr per option
+
+    def __init__(  # noqa: PLR0913, PLR0917
         self,
-        app: Union[FastAPI, Starlette],
-        engine: Optional["AsyncEngine"] = None,
-        session_maker: Optional["async_sessionmaker[AsyncSession]"] = None,
+        app: FastAPI | Starlette,
+        engine: AsyncEngine | None = None,
+        session_maker: async_sessionmaker[AsyncSession] | None = None,
         title: str = "Admin",
         base_url: str = "/admin",
         route_name: str = "admin",
-        logo_url: Optional[str] = None,
-        index_view: Optional[type["AdminIndexView"]] = None,
+        logo_url: str | None = None,
+        index_view: type[AdminIndexView] | None = None,
+        *,
         debug: bool = False,
-    ):
+    ) -> None:
         """Initialize the admin interface.
 
         Args:
             app: FastAPI or Starlette application to mount admin on.
             engine: Async SQLAlchemy engine. Sync engines are not supported.
-            session_maker: Optional async session maker. If not provided, created from engine.
+            session_maker: Optional async session maker.
+                If not provided, created from engine.
             title: Admin interface title.
             base_url: Base URL path for admin (default: "/admin").
             route_name: Name for the mounted admin route.
             logo_url: URL of logo image.
             index_view: Custom index view class.
             debug: Enable debug mode.
+
+        Raises:
+            TypeError: If neither engine nor session_maker is provided.
         """
         if engine is None and session_maker is None:
             msg = (
@@ -97,27 +112,38 @@ class BaseAdmin:
         if session_maker is not None:
             self._validate_session_maker(session_maker)
 
-        self.app = app
-        self.engine = engine
-        self.session_maker: async_sessionmaker[AsyncSession] = session_maker or self._create_session_maker(engine)
+        self.app: FastAPI | Starlette = app
+        self.engine: AsyncEngine | None = engine
+        self.session_maker: async_sessionmaker[AsyncSession] = (
+            session_maker or self._create_session_maker(engine)
+        )
 
-        self.title = title
-        self.base_url = base_url.rstrip("/")
-        self.route_name = route_name
-        self.logo_url = logo_url
-        self.debug = debug
+        self.title: str = title
+        self.base_url: str = base_url.rstrip("/")
+        self.route_name: str = route_name
+        self.logo_url: str | None = logo_url
+        self.debug: bool = debug
 
-        self.layout = MasterLayout(admin=self, title=title, logo_url=logo_url)
+        self.layout: MasterLayout = MasterLayout(
+            admin=self, title=title, logo_url=logo_url
+        )
 
         self._views: list[BaseView] = []
         self._model_views: list[BaseModelView] = []
 
-        self._index_view_class = index_view
-        self._mounted = False
+        self._index_view_class: type[AdminIndexView] | None = index_view
+        self._mounted: bool = False
 
     @staticmethod
-    def _validate_session_maker(session_maker: Any) -> None:
-        """Reject sync sessionmaker instances. Unrecognized types raise TypeError."""
+    def _validate_session_maker(session_maker: object) -> None:
+        """Reject sync sessionmaker instances.
+
+        Raises:
+            TypeError: If session_maker is sync or of unrecognized type.
+        """
+        # Snapshot the name before isinstance narrowing: after narrowing, the
+        # union carries partially-unknown generics that checkers flag in type().
+        maker_name: str = type(session_maker).__name__
         try:
             from sqlalchemy.ext.asyncio import async_sessionmaker  # noqa: PLC0415
 
@@ -130,28 +156,45 @@ class BaseAdmin:
             from sqlalchemy.orm import sessionmaker  # noqa: PLC0415
 
             if isinstance(session_maker, sessionmaker):
-                msg = "Sync sessionmaker is not supported. Use async_sessionmaker from sqlalchemy.ext.asyncio instead."
+                msg = (
+                    "Sync sessionmaker is not supported. "
+                    "Use async_sessionmaker from sqlalchemy.ext.asyncio instead."
+                )
                 raise TypeError(msg)
         except ImportError:
             pass
 
         msg = (
-            f"Unrecognized session_maker type: {type(session_maker).__name__}. "
+            f"Unrecognized session_maker type: {maker_name}. "
             "Expected async_sessionmaker from sqlalchemy.ext.asyncio."
         )
         raise TypeError(msg)
 
-    def _create_session_maker(self, engine: Optional["AsyncEngine"]) -> "async_sessionmaker[AsyncSession]":
-        """Create async session maker from engine."""
+    @staticmethod
+    def _create_session_maker(engine: object) -> async_sessionmaker[AsyncSession]:
+        """Create async session maker from engine.
+
+        Returns:
+            New async session maker bound to engine.
+
+        Raises:
+            TypeError: If engine is None or not an async engine.
+        """
         if engine is None:
             msg = "Cannot create session_maker: no engine provided."
             raise TypeError(msg)
 
         try:
-            from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker  # noqa: PLC0415
+            from sqlalchemy.ext.asyncio import (  # noqa: PLC0415
+                AsyncEngine,
+                AsyncSession,
+                async_sessionmaker,
+            )
 
             if isinstance(engine, AsyncEngine):
-                return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+                return async_sessionmaker(
+                    engine, class_=AsyncSession, expire_on_commit=False
+                )
         except ImportError:
             pass
 
@@ -162,21 +205,27 @@ class BaseAdmin:
         raise TypeError(msg)
 
     def get_relative_url(self, url: str) -> str:
-        """Strip the base_url path prefix to produce a path relative to the admin mount point."""
+        """Strip base_url prefix to produce a relative path.
+
+        Returns:
+            Path relative to the admin mount point.
+        """
         if self.base_url and url.startswith(self.base_url):
             return url[len(self.base_url) :] or "/"
         return url
 
     @property
-    def views(self) -> Sequence["BaseView"]:
+    def views(self) -> Sequence[BaseView]:
         """All registered views (read-only for navbar)."""
         return list(self._views)
 
-    def add_view(self, view: Union[type["BaseView"], type["BaseModelView"]]) -> None:
+    def add_view(self, view: object) -> None:
         """Add a view to the admin interface.
 
         Args:
             view: View class to add (will be instantiated with admin reference).
+                Typed as ``object`` because non-class arguments are validated
+                at runtime (see Raises) rather than rejected by callers' checkers.
 
         Raises:
             RuntimeError: If called after mount().
@@ -188,9 +237,11 @@ class BaseAdmin:
 
         from fastui_admin.views import BaseModelView, BaseView  # noqa: PLC0415
 
+        # Snapshot the name before isinstance narrowing (see _validate_session_maker).
+        view_name: str = type(view).__name__
         if not isinstance(view, type) or not issubclass(view, BaseView):
             msg = (
-                f"add_view() expects a BaseView subclass, got {type(view).__name__}. "
+                f"add_view() expects a BaseView subclass, got {view_name}. "
                 "Pass the class itself, not an instance."
             )
             raise TypeError(msg)
@@ -220,24 +271,29 @@ class BaseAdmin:
 
         routes = self._build_routes()
 
-        admin_app = Starlette(
-            debug=self.debug,
-            routes=routes,
-        )
+        admin_app = Starlette(debug=self.debug, routes=routes)
 
         if isinstance(self.app, FastAPI):
             self.app.mount(self.base_url, admin_app, name=self.route_name)
         else:
-            self.app.routes.append(Mount(self.base_url, app=admin_app, name=self.route_name))
+            self.app.routes.append(
+                Mount(self.base_url, app=admin_app, name=self.route_name)
+            )
 
         self._mounted = True
 
     def _build_routes(self) -> list[Route]:
-        """Build all routes for admin interface."""
+        """Build all routes for admin interface.
+
+        Returns:
+            List of routes for the admin interface.
+        """
         routes: list[Route] = []
 
-        routes.append(Route("/", endpoint=self._index_html, name="index"))
-        routes.append(Route("/api/", endpoint=self._index_api, name="index_api"))
+        routes.extend((
+            Route("/", endpoint=self._index_html, name="index"),
+            Route("/api/", endpoint=self._index_api, name="index_api"),
+        ))
 
         for view in self._model_views:
             routes.extend(view.get_routes())
@@ -249,35 +305,61 @@ class BaseAdmin:
                 continue
             view_slug = slugify(base_view.name)
             view_name = base_view.name
-            routes.append(Route(f"/{view_slug}/", endpoint=self._make_view_html(base_view), name=f"{view_name}_html"))
-            routes.append(Route(f"/api/{view_slug}/", endpoint=self._make_view_api(base_view), name=f"{view_name}_api"))
+            routes.extend((
+                Route(
+                    f"/{view_slug}/",
+                    endpoint=self._make_view_html(base_view),
+                    name=f"{view_name}_html",
+                ),
+                Route(
+                    f"/api/{view_slug}/",
+                    endpoint=self._make_view_api(base_view),
+                    name=f"{view_name}_api",
+                ),
+            ))
 
-        routes.append(Route("/{path:path}", endpoint=self._catch_all_html, name="catch_all"))
+        routes.append(
+            Route("/{path:path}", endpoint=self._catch_all_html, name="catch_all")
+        )
 
         return routes
 
-    async def _index_html(self, request: Request) -> HTMLResponse:  # noqa: ARG002
-        """Serve the SPA shell for index page."""
+    async def _index_html(self, _request: Request) -> HTMLResponse:
+        """Serve the SPA shell for index page.
+
+        Returns:
+            HTML response with the prebuilt admin shell.
+        """
         return HTMLResponse(
             self.layout.get_prebuilt_html(
-                title=self.title,
-                api_root_url=f"{self.base_url}/api",
+                title=self.title, api_root_url=f"{self.base_url}/api"
             )
         )
 
     async def _index_api(self, request: Request) -> JSONResponse:
-        """API endpoint returning index page components.
+        """Return index page components.
 
         The index view is always present — mount() inserts it at _views[0].
+
+        Returns:
+            JSON response with FastUI components.
         """
         index_view = self._views[0]
         components = await index_view.render(request)
-        return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
+        return JSONResponse([
+            comp.model_dump(mode="json", exclude_none=True) for comp in components
+        ])
 
-    def _make_view_html(self, view: "BaseView") -> Callable[..., Any]:
-        """Create an HTML endpoint for a plain BaseView."""
+    def _make_view_html(
+        self, view: BaseView
+    ) -> Callable[[Request], Awaitable[HTMLResponse]]:
+        """Create an HTML endpoint for a plain BaseView.
 
-        async def endpoint(request: Request) -> HTMLResponse:  # noqa: ARG001
+        Returns:
+            Async endpoint serving the SPA shell.
+        """
+
+        async def endpoint(_request: Request) -> HTMLResponse:  # noqa: RUF029
             return HTMLResponse(
                 self.layout.get_prebuilt_html(
                     title=f"{view.name} - {self.title}",
@@ -287,20 +369,30 @@ class BaseAdmin:
 
         return endpoint
 
-    def _make_view_api(self, view: "BaseView") -> Callable[..., Any]:
-        """Create an API endpoint for a plain BaseView."""
+    @staticmethod
+    def _make_view_api(view: BaseView) -> Callable[[Request], Awaitable[JSONResponse]]:
+        """Create an API endpoint for a plain BaseView.
+
+        Returns:
+            Async endpoint returning FastUI components.
+        """
 
         async def endpoint(request: Request) -> JSONResponse:
             components = await view.render(request)
-            return JSONResponse([comp.model_dump(mode="json", exclude_none=True) for comp in components])
+            return JSONResponse([
+                comp.model_dump(mode="json", exclude_none=True) for comp in components
+            ])
 
         return endpoint
 
-    async def _catch_all_html(self, request: Request) -> HTMLResponse:  # noqa: ARG002
-        """Catch-all endpoint for SPA routing."""
+    async def _catch_all_html(self, _request: Request) -> HTMLResponse:
+        """Catch-all endpoint for SPA routing.
+
+        Returns:
+            HTML response with the prebuilt admin shell.
+        """
         return HTMLResponse(
             self.layout.get_prebuilt_html(
-                title=self.title,
-                api_root_url=f"{self.base_url}/api",
+                title=self.title, api_root_url=f"{self.base_url}/api"
             )
         )

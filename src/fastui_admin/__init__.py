@@ -7,10 +7,4 @@ from fastui_admin.base import BaseAdmin
 from fastui_admin.layout import MasterLayout
 from fastui_admin.views import AdminIndexView, BaseModelView, BaseView
 
-__all__ = [
-    "AdminIndexView",
-    "BaseAdmin",
-    "BaseModelView",
-    "BaseView",
-    "MasterLayout",
-]
+__all__ = ["AdminIndexView", "BaseAdmin", "BaseModelView", "BaseView", "MasterLayout"]

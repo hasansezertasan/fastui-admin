@@ -1,4 +1,4 @@
 # SPDX-FileCopyrightText: 2024-present Hasan Sezer Tasan <hasansezertasan@gmail.com>
 #
 # SPDX-License-Identifier: MIT
-"""Basic FastUI Admin example."""
+"""Simple FastUI Admin example."""
