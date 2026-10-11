@@ -29,7 +29,7 @@ from typing_extensions import override
 from fastui_admin import BaseAdmin, BaseModelView, BaseView
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
+    from collections.abc import AsyncGenerator
 
     from starlette.requests import Request
 
@@ -131,7 +131,7 @@ class StatsView(BaseView):
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:  # noqa: ARG001
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:  # noqa: ARG001
     """Initialize database on startup."""
     await init_db()
     yield
