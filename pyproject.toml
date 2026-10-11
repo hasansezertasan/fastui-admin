@@ -49,7 +49,7 @@ dependencies = [
   "fastui>=0.6.0",
   "fastapi>=0.100.0",
   "sqlalchemy>=2.0.0",
-  "typing-extensions==4.16.0",
+  "typing-extensions>=4.12.0",
 ]
 
 [project.urls]
