@@ -193,9 +193,9 @@ def get_python_type(sa_type: TypeEngine[_T]) -> type:
         Mapped Python type, or str for unmapped types such as JSON or ARRAY.
     """
     for sa_cls, py_type in SA_TYPE_MAP.items():
-        # Membership (not isinstance): the map is annotated with parameterized
-        # generics for precision, which checkers reject in isinstance/issubclass
-        # checks. For concrete column types this is equivalent to isinstance.
+        # Membership (not isinstance): isinstance() rejects parameterized
+        # generics, so compare against the MRO directly. For concrete column
+        # types this is equivalent to isinstance.
         if sa_cls in type(sa_type).__mro__:
             return py_type
     logger.warning(
