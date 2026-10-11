@@ -286,7 +286,7 @@ jobs:
         # private repo with no token falls through to the visible skip below.
         # Best-effort (`fail_ci_if_error` defaults to false).
         if: ${{ env.CODECOV_TOKEN_SET == 'true' || env.REPO_IS_PUBLIC == 'true' }}
-        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f  # v7.0.0
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5  # v7.1.1
         with:
           files: ./coverage.xml
           # .github/codecov.yml scopes the project status to `flags: [unit]`. An
