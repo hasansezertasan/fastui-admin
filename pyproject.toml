@@ -62,11 +62,7 @@ source = "https://github.com/hasansezertasan/fastui-admin.git"
 
 [dependency-groups]
 dev = [
-<<<<<<< before updating
   "tox==4.65.0",
-=======
-  "tox==4.64.10",
->>>>>>> after updating
   "tox-uv==1.36.1",
   "debugpy==1.8.22",
   { include-group = "style" },
@@ -87,18 +83,7 @@ style = [
   "typos==1.49.0",
   "zuban==0.9.1",
 ]
-<<<<<<< before updating
-=======
-# semgrep is deliberately its own group rather than part of `style`: `dev`
-# includes `style` wholesale, so a plain `uv sync` — and every Windows/macOS
-# cell in ci.yml, which runs `uv run --locked tox run` — would download and
-# unpack ~215 MB (the wheel bundles a native semgrep-core) for a tool that only
-# ever executes in the Linux-only `style` job. The tox `style` env lists this
-# group explicitly. Still a single version source, same as every other pin.
-sast = [
-  "semgrep==1.180.0",
-]
-# Dependency hygiene gets its own group for the same reason `sast` does: it is
+# Dependency hygiene gets its own group so a plain `uv sync` stays lean: it is
 # only ever run by the on-demand `deps` tox env and the `deps` CI job, so a plain
 # `uv sync` should not install it. deptry checks the imports against the declared
 # dependencies (missing, transitive, misplaced or obsolete); creosote flags
@@ -107,7 +92,6 @@ deps = [
   "creosote==5.2.0",
   "deptry==0.25.1",
 ]
->>>>>>> after updating
 test = [
   "coverage-enable-subprocess==1.0",
   "coverage[toml]==7.16.2",

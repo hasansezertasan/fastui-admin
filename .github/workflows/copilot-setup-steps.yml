@@ -19,19 +19,15 @@ jobs:
         with:
           persist-credentials: false
       - name: Set up Python
-<<<<<<< before updating
-=======
         # cobo (mise pipx backend) requires Python >=3.14, but the runner's
         # system Python is older — and without uv on PATH mise falls back from
         # uvx to pipx, which ignores the mise-managed Python. Provision both
         # first so `mise install` resolves cobo against the .python-version
         # interpreter (issue #369).
->>>>>>> after updating
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
         with:
           python-version-file: .python-version
       - name: Set up uv
-<<<<<<< before updating
         uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884  # v10.3.0
       - name: Install mise tools
         # uv must precede mise: the pipx backend prefers `uv tool install`
@@ -39,10 +35,5 @@ jobs:
         # (which requires >=3.14). Without uv it falls back to pipx with the
         # system Python and the install fails. Mirrors the CI hooks job order.
         uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8  # v5.1.2
-=======
-        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
-      - name: Install mise tools
-        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c  # v4.3.0
->>>>>>> after updating
       - name: Sync dependencies
         run: uv sync

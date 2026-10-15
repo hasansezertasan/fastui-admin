@@ -62,11 +62,7 @@ hooks = [
 
 [[repos]]
 repo = "https://github.com/astral-sh/uv-pre-commit"
-<<<<<<< before updating
 rev = "0.13.0"
-=======
-rev = "0.12.24"
->>>>>>> after updating
 hooks = [{ id = "uv-lock" }]
 
 # Runs before ruff so any `__all__` it inserts is sorted/formatted in the same pass.
@@ -87,19 +83,6 @@ hooks = [
 repo = "local"
 hooks = [
   { id = "basedpyright", name = "basedpyright Type Checker", entry = "uv run --locked --group style basedpyright", language = "system", types = ["python"], pass_filenames = false },
-<<<<<<< before updating
-  # mypy runs as a whole-package gate (`mypy src`) over the same surface as
-  # tox's canonical mypy (which type-checks only src/). Like basedpyright it
-  # needs the installed package + deps to resolve imports, so it is a `local`
-  # `system` hook via `uv run`, not an upstream repo hook: an isolated hook
-  # env sees every third-party import as `Any`, which trips
-  # disallow-subclassing-any/warn-return-any/warn-unused-ignores on code the
-  # canonical run passes clean. Single version source: the `style` group pin.
-  # Filenames are not passed (whole `src/` every run); this also sidesteps the
-  # duplicate-module check on sibling examples/*/main.py demo scripts and the
-  # strict-decorator errors in tests/ that the canonical run never checks.
-  { id = "mypy", name = "mypy Type Checker", entry = "uv run --locked --group style mypy src", language = "system", types = ["python"], pass_filenames = false },
-=======
   # mypy needs the installed package + deps to resolve third-party imports, so
   # like basedpyright it is a `local` `system` hook via `uv run` rather than
   # mirrors-mypy's isolated venv, which needed a hand-kept copy of every
@@ -107,7 +90,6 @@ hooks = [
   # Filenames are not passed: mypy checks the `[tool.mypy] files` set, matching
   # tox's canonical run. Single version source: the `style` group pin.
   { id = "mypy", name = "mypy Type Checker", entry = "uv run --locked --group style mypy", language = "system", types = ["python"], pass_filenames = false },
->>>>>>> after updating
   # pylint runs as a whole-package gate (`pylint src`) that deliberately overlaps
   # ruff's PL* rules. Like basedpyright it needs the installed package + deps to
   # resolve imports, so it is a `local` `system` hook via `uv run`, not an upstream
