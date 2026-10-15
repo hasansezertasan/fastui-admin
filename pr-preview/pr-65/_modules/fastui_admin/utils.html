@@ -319,179 +319,180 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="175"><span class="sd">        URL-safe slug string.</span>
 </span><span data-line="176">
 </span><span data-line="177"><span class="sd">    Examples:</span>
-</span><span data-line="178"><span class="sd">        &gt;&gt;&gt; slugify("Audit Logs")</span>
-</span><span data-line="179"><span class="sd">        'audit-logs'</span>
-</span><span data-line="180"><span class="sd">        &gt;&gt;&gt; slugify("My View!")</span>
-</span><span data-line="181"><span class="sd">        'my-view'</span>
-</span><span data-line="182"><span class="sd">    """</span>
-</span><span data-line="183">    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[^a-z0-9]+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span></div>
+</span><span data-line="178"><span class="sd">        &gt;&gt;&gt; from fastui_admin.utils import slugify</span>
+</span><span data-line="179"><span class="sd">        &gt;&gt;&gt; slugify("Audit Logs")</span>
+</span><span data-line="180"><span class="sd">        'audit-logs'</span>
+</span><span data-line="181"><span class="sd">        &gt;&gt;&gt; slugify("My View!")</span>
+</span><span data-line="182"><span class="sd">        'my-view'</span>
+</span><span data-line="183"><span class="sd">    """</span>
+</span><span data-line="184">    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">"[^a-z0-9]+"</span><span class="p">,</span> <span class="s2">"-"</span><span class="p">,</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"-"</span><span class="p">)</span></div>
 
-</span><span data-line="184">
 </span><span data-line="185">
+</span><span data-line="186">
 <div class="viewcode-block" id="get_python_type">
 <a class="viewcode-back" href="../../modules.html#fastui_admin.utils.get_python_type">[docs]</a>
-</span><span data-line="186"><span class="k">def</span><span class="w"> </span><span class="nf">get_python_type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">:</span> <span class="n">TypeEngine</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-</span><span data-line="187"><span class="w">    </span><span class="sd">"""Get Python type from SQLAlchemy column type.</span>
-</span><span data-line="188">
-</span><span data-line="189"><span class="sd">    Args:</span>
-</span><span data-line="190"><span class="sd">        sa_type: SQLAlchemy column type to map.</span>
-</span><span data-line="191">
-</span><span data-line="192"><span class="sd">    Returns:</span>
-</span><span data-line="193"><span class="sd">        Mapped Python type, or str for unmapped types such as JSON or ARRAY.</span>
-</span><span data-line="194"><span class="sd">    """</span>
-</span><span data-line="195">    <span class="k">for</span> <span class="n">sa_cls</span><span class="p">,</span> <span class="n">py_type</span> <span class="ow">in</span> <span class="n">SA_TYPE_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span data-line="196">        <span class="c1"># Membership (not isinstance): isinstance() rejects parameterized</span>
-</span><span data-line="197">        <span class="c1"># generics, so compare against the MRO directly. For concrete column</span>
-</span><span data-line="198">        <span class="c1"># types this is equivalent to isinstance.</span>
-</span><span data-line="199">        <span class="k">if</span> <span class="n">sa_cls</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">:</span>
-</span><span data-line="200">            <span class="k">return</span> <span class="n">py_type</span>
-</span><span data-line="201">    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span data-line="202">        <span class="s2">"No Python type mapping for SQLAlchemy type </span><span class="si">%s</span><span class="s2">; defaulting to str."</span><span class="p">,</span>
-</span><span data-line="203">        <span class="nb">type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-</span><span data-line="204">    <span class="p">)</span>
-</span><span data-line="205">    <span class="k">return</span> <span class="nb">str</span></div>
+</span><span data-line="187"><span class="k">def</span><span class="w"> </span><span class="nf">get_python_type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">:</span> <span class="n">TypeEngine</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+</span><span data-line="188"><span class="w">    </span><span class="sd">"""Get Python type from SQLAlchemy column type.</span>
+</span><span data-line="189">
+</span><span data-line="190"><span class="sd">    Args:</span>
+</span><span data-line="191"><span class="sd">        sa_type: SQLAlchemy column type to map.</span>
+</span><span data-line="192">
+</span><span data-line="193"><span class="sd">    Returns:</span>
+</span><span data-line="194"><span class="sd">        Mapped Python type, or str for unmapped types such as JSON or ARRAY.</span>
+</span><span data-line="195"><span class="sd">    """</span>
+</span><span data-line="196">    <span class="k">for</span> <span class="n">sa_cls</span><span class="p">,</span> <span class="n">py_type</span> <span class="ow">in</span> <span class="n">SA_TYPE_MAP</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="197">        <span class="c1"># Membership (not isinstance): isinstance() rejects parameterized</span>
+</span><span data-line="198">        <span class="c1"># generics, so compare against the MRO directly. For concrete column</span>
+</span><span data-line="199">        <span class="c1"># types this is equivalent to isinstance.</span>
+</span><span data-line="200">        <span class="k">if</span> <span class="n">sa_cls</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__mro__</span><span class="p">:</span>
+</span><span data-line="201">            <span class="k">return</span> <span class="n">py_type</span>
+</span><span data-line="202">    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+</span><span data-line="203">        <span class="s2">"No Python type mapping for SQLAlchemy type </span><span class="si">%s</span><span class="s2">; defaulting to str."</span><span class="p">,</span>
+</span><span data-line="204">        <span class="nb">type</span><span class="p">(</span><span class="n">sa_type</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+</span><span data-line="205">    <span class="p">)</span>
+</span><span data-line="206">    <span class="k">return</span> <span class="nb">str</span></div>
 
-</span><span data-line="206">
 </span><span data-line="207">
-</span><span data-line="208"><span class="k">def</span><span class="w"> </span><span class="nf">_extract_sa_default</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="n">Column</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
-</span><span data-line="209"><span class="w">    </span><span class="sd">"""Extract a scalar default value from a SQLAlchemy column, if possible.</span>
-</span><span data-line="210">
-</span><span data-line="211"><span class="sd">    Args:</span>
-</span><span data-line="212"><span class="sd">        column: SQLAlchemy column to inspect.</span>
-</span><span data-line="213">
-</span><span data-line="214"><span class="sd">    Returns:</span>
-</span><span data-line="215"><span class="sd">        Scalar default value, or None when the default is callable,</span>
-</span><span data-line="216"><span class="sd">        server-side, or absent.</span>
-</span><span data-line="217">
-</span><span data-line="218"><span class="sd">    Note: ``server_default`` (e.g. ``text("CURRENT_TIMESTAMP")``) is intentionally</span>
-</span><span data-line="219"><span class="sd">    ignored — it cannot be meaningfully represented as a Pydantic field default.</span>
-</span><span data-line="220"><span class="sd">    """</span>
-</span><span data-line="221">    <span class="n">col_default</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">default</span>
-</span><span data-line="222">    <span class="k">if</span> <span class="n">col_default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="223">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="224">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col_default</span><span class="p">,</span> <span class="n">ColumnDefault</span><span class="p">):</span>
-</span><span data-line="225">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="226">    <span class="c1"># Cast (not annotate): assignment would narrow the declared type to Any.</span>
-</span><span data-line="227">    <span class="n">arg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"object"</span><span class="p">,</span> <span class="n">col_default</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span>
-</span><span data-line="228">    <span class="c1"># Only use scalar defaults; callables (like datetime.now) cannot be</span>
-</span><span data-line="229">    <span class="c1"># serialized as Pydantic defaults.</span>
-</span><span data-line="230">    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
-</span><span data-line="231">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="232">    <span class="k">return</span> <span class="n">arg</span>
-</span><span data-line="233">
+</span><span data-line="208">
+</span><span data-line="209"><span class="k">def</span><span class="w"> </span><span class="nf">_extract_sa_default</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="n">Column</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+</span><span data-line="210"><span class="w">    </span><span class="sd">"""Extract a scalar default value from a SQLAlchemy column, if possible.</span>
+</span><span data-line="211">
+</span><span data-line="212"><span class="sd">    Args:</span>
+</span><span data-line="213"><span class="sd">        column: SQLAlchemy column to inspect.</span>
+</span><span data-line="214">
+</span><span data-line="215"><span class="sd">    Returns:</span>
+</span><span data-line="216"><span class="sd">        Scalar default value, or None when the default is callable,</span>
+</span><span data-line="217"><span class="sd">        server-side, or absent.</span>
+</span><span data-line="218">
+</span><span data-line="219"><span class="sd">    Note: ``server_default`` (e.g. ``text("CURRENT_TIMESTAMP")``) is intentionally</span>
+</span><span data-line="220"><span class="sd">    ignored — it cannot be meaningfully represented as a Pydantic field default.</span>
+</span><span data-line="221"><span class="sd">    """</span>
+</span><span data-line="222">    <span class="n">col_default</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">default</span>
+</span><span data-line="223">    <span class="k">if</span> <span class="n">col_default</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="224">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="225">    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">col_default</span><span class="p">,</span> <span class="n">ColumnDefault</span><span class="p">):</span>
+</span><span data-line="226">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="227">    <span class="c1"># Cast (not annotate): assignment would narrow the declared type to Any.</span>
+</span><span data-line="228">    <span class="n">arg</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"object"</span><span class="p">,</span> <span class="n">col_default</span><span class="o">.</span><span class="n">arg</span><span class="p">)</span>
+</span><span data-line="229">    <span class="c1"># Only use scalar defaults; callables (like datetime.now) cannot be</span>
+</span><span data-line="230">    <span class="c1"># serialized as Pydantic defaults.</span>
+</span><span data-line="231">    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+</span><span data-line="232">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="233">    <span class="k">return</span> <span class="n">arg</span>
 </span><span data-line="234">
-</span><span data-line="235"><span class="k">def</span><span class="w"> </span><span class="nf">_should_include_column</span><span class="p">(</span>
-</span><span data-line="236">    <span class="n">col_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="237">    <span class="n">include_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="238">    <span class="n">exclude_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-</span><span data-line="239">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="240">    <span class="n">for_form</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-</span><span data-line="241">    <span class="n">pk_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="242"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span data-line="243"><span class="w">    </span><span class="sd">"""Decide whether a column belongs in the generated schema.</span>
-</span><span data-line="244">
-</span><span data-line="245"><span class="sd">    Args:</span>
-</span><span data-line="246"><span class="sd">        col_name: Column key to check.</span>
-</span><span data-line="247"><span class="sd">        include_columns: Columns to include (None or empty means all).</span>
-</span><span data-line="248"><span class="sd">        exclude_columns: Columns to exclude.</span>
-</span><span data-line="249"><span class="sd">        for_form: Exclude the primary key when True.</span>
-</span><span data-line="250"><span class="sd">        pk_name: Primary key column name, if any.</span>
-</span><span data-line="251">
-</span><span data-line="252"><span class="sd">    Returns:</span>
-</span><span data-line="253"><span class="sd">        True when the column should be included.</span>
-</span><span data-line="254"><span class="sd">    """</span>
-</span><span data-line="255">    <span class="k">if</span> <span class="n">include_columns</span> <span class="ow">and</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include_columns</span><span class="p">:</span>
-</span><span data-line="256">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="257">    <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">exclude_columns</span><span class="p">:</span>
-</span><span data-line="258">        <span class="k">return</span> <span class="kc">False</span>
-</span><span data-line="259">    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">for_form</span> <span class="ow">and</span> <span class="n">col_name</span> <span class="o">==</span> <span class="n">pk_name</span><span class="p">)</span>
-</span><span data-line="260">
+</span><span data-line="235">
+</span><span data-line="236"><span class="k">def</span><span class="w"> </span><span class="nf">_should_include_column</span><span class="p">(</span>
+</span><span data-line="237">    <span class="n">col_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="238">    <span class="n">include_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="239">    <span class="n">exclude_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="240">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="241">    <span class="n">for_form</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+</span><span data-line="242">    <span class="n">pk_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="243"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="244"><span class="w">    </span><span class="sd">"""Decide whether a column belongs in the generated schema.</span>
+</span><span data-line="245">
+</span><span data-line="246"><span class="sd">    Args:</span>
+</span><span data-line="247"><span class="sd">        col_name: Column key to check.</span>
+</span><span data-line="248"><span class="sd">        include_columns: Columns to include (None or empty means all).</span>
+</span><span data-line="249"><span class="sd">        exclude_columns: Columns to exclude.</span>
+</span><span data-line="250"><span class="sd">        for_form: Exclude the primary key when True.</span>
+</span><span data-line="251"><span class="sd">        pk_name: Primary key column name, if any.</span>
+</span><span data-line="252">
+</span><span data-line="253"><span class="sd">    Returns:</span>
+</span><span data-line="254"><span class="sd">        True when the column should be included.</span>
+</span><span data-line="255"><span class="sd">    """</span>
+</span><span data-line="256">    <span class="k">if</span> <span class="n">include_columns</span> <span class="ow">and</span> <span class="n">col_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include_columns</span><span class="p">:</span>
+</span><span data-line="257">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="258">    <span class="k">if</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">exclude_columns</span><span class="p">:</span>
+</span><span data-line="259">        <span class="k">return</span> <span class="kc">False</span>
+</span><span data-line="260">    <span class="k">return</span> <span class="ow">not</span> <span class="p">(</span><span class="n">for_form</span> <span class="ow">and</span> <span class="n">col_name</span> <span class="o">==</span> <span class="n">pk_name</span><span class="p">)</span>
 </span><span data-line="261">
-</span><span data-line="262"><span class="k">def</span><span class="w"> </span><span class="nf">_build_field_info</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="n">Column</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
-</span><span data-line="263"><span class="w">    </span><span class="sd">"""Create a Pydantic field definition for a SQLAlchemy column.</span>
-</span><span data-line="264">
-</span><span data-line="265"><span class="sd">    Args:</span>
-</span><span data-line="266"><span class="sd">        column: SQLAlchemy column to convert.</span>
-</span><span data-line="267">
-</span><span data-line="268"><span class="sd">    Returns:</span>
-</span><span data-line="269"><span class="sd">        Tuple of field type and field info for ``create_model``.</span>
-</span><span data-line="270"><span class="sd">    """</span>
-</span><span data-line="271">    <span class="n">py_type</span> <span class="o">=</span> <span class="n">get_python_type</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
-</span><span data-line="272">    <span class="n">col_name</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">key</span>
-</span><span data-line="273">    <span class="n">is_nullable</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">nullable</span>
-</span><span data-line="274">    <span class="n">default_value</span> <span class="o">=</span> <span class="n">_extract_sa_default</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-</span><span data-line="275">    <span class="n">title</span> <span class="o">=</span> <span class="n">col_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
-</span><span data-line="276">
-</span><span data-line="277">    <span class="n">field_type</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">py_type</span> <span class="o">|</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">is_nullable</span> <span class="k">else</span> <span class="n">py_type</span>
-</span><span data-line="278">
-</span><span data-line="279">    <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="280">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
-</span><span data-line="281">    <span class="k">if</span> <span class="n">is_nullable</span><span class="p">:</span>
-</span><span data-line="282">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
-</span><span data-line="283">    <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=...</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
-</span><span data-line="284">
+</span><span data-line="262">
+</span><span data-line="263"><span class="k">def</span><span class="w"> </span><span class="nf">_build_field_info</span><span class="p">(</span><span class="n">column</span><span class="p">:</span> <span class="n">Column</span><span class="p">[</span><span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">FieldDefinition</span><span class="p">:</span>
+</span><span data-line="264"><span class="w">    </span><span class="sd">"""Create a Pydantic field definition for a SQLAlchemy column.</span>
+</span><span data-line="265">
+</span><span data-line="266"><span class="sd">    Args:</span>
+</span><span data-line="267"><span class="sd">        column: SQLAlchemy column to convert.</span>
+</span><span data-line="268">
+</span><span data-line="269"><span class="sd">    Returns:</span>
+</span><span data-line="270"><span class="sd">        Tuple of field type and field info for ``create_model``.</span>
+</span><span data-line="271"><span class="sd">    """</span>
+</span><span data-line="272">    <span class="n">py_type</span> <span class="o">=</span> <span class="n">get_python_type</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+</span><span data-line="273">    <span class="n">col_name</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">key</span>
+</span><span data-line="274">    <span class="n">is_nullable</span> <span class="o">=</span> <span class="n">column</span><span class="o">.</span><span class="n">nullable</span>
+</span><span data-line="275">    <span class="n">default_value</span> <span class="o">=</span> <span class="n">_extract_sa_default</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+</span><span data-line="276">    <span class="n">title</span> <span class="o">=</span> <span class="n">col_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+</span><span data-line="277">
+</span><span data-line="278">    <span class="n">field_type</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="n">py_type</span> <span class="o">|</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">is_nullable</span> <span class="k">else</span> <span class="n">py_type</span>
+</span><span data-line="279">
+</span><span data-line="280">    <span class="k">if</span> <span class="n">default_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="281">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
+</span><span data-line="282">    <span class="k">if</span> <span class="n">is_nullable</span><span class="p">:</span>
+</span><span data-line="283">        <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
+</span><span data-line="284">    <span class="k">return</span> <span class="n">FieldDefinition</span><span class="p">(</span><span class="n">field_type</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">default</span><span class="o">=...</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">))</span>
 </span><span data-line="285">
+</span><span data-line="286">
 <div class="viewcode-block" id="sqlalchemy_to_pydantic">
 <a class="viewcode-back" href="../../modules.html#fastui_admin.utils.sqlalchemy_to_pydantic">[docs]</a>
-</span><span data-line="286"><span class="k">def</span><span class="w"> </span><span class="nf">sqlalchemy_to_pydantic</span><span class="p">(</span>
-</span><span data-line="287">    <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span>
-</span><span data-line="288">    <span class="n">include_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="289">    <span class="n">exclude_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span data-line="290">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="291">    <span class="n">for_form</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span data-line="292"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
-</span><span data-line="293"><span class="w">    </span><span class="sd">"""</span>
-</span><span data-line="294"><span class="sd">    Generate a Pydantic model from a SQLAlchemy model.</span>
-</span><span data-line="295">
-</span><span data-line="296"><span class="sd">    Args:</span>
-</span><span data-line="297"><span class="sd">        model: SQLAlchemy model class</span>
-</span><span data-line="298"><span class="sd">        include_columns: Columns to include (None = all)</span>
-</span><span data-line="299"><span class="sd">        exclude_columns: Columns to exclude</span>
-</span><span data-line="300"><span class="sd">        for_form: If True, exclude primary key (for create/edit forms)</span>
-</span><span data-line="301">
-</span><span data-line="302"><span class="sd">    Returns:</span>
-</span><span data-line="303"><span class="sd">        Dynamically created Pydantic model</span>
-</span><span data-line="304"><span class="sd">    """</span>
-</span><span data-line="305">    <span class="n">mapper</span> <span class="o">=</span> <span class="n">inspect</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-</span><span data-line="306">    <span class="n">exclude_columns</span> <span class="o">=</span> <span class="n">exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
-</span><span data-line="307">
-</span><span data-line="308">    <span class="c1"># Get primary key column name</span>
-</span><span data-line="309">    <span class="n">pk_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
-</span><span data-line="310">        <span class="s2">"str | None"</span><span class="p">,</span> <span class="n">mapper</span><span class="o">.</span><span class="n">primary_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">mapper</span><span class="o">.</span><span class="n">primary_key</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="311">    <span class="p">)</span>
-</span><span data-line="312">
-</span><span data-line="313">    <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="314">
-</span><span data-line="315">    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">mapper</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-</span><span data-line="316">        <span class="k">if</span> <span class="ow">not</span> <span class="n">_should_include_column</span><span class="p">(</span>
-</span><span data-line="317">            <span class="n">column</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
-</span><span data-line="318">            <span class="n">include_columns</span><span class="p">,</span>
-</span><span data-line="319">            <span class="n">exclude_columns</span><span class="p">,</span>
-</span><span data-line="320">            <span class="n">for_form</span><span class="o">=</span><span class="n">for_form</span><span class="p">,</span>
-</span><span data-line="321">            <span class="n">pk_name</span><span class="o">=</span><span class="n">pk_name</span><span class="p">,</span>
-</span><span data-line="322">        <span class="p">):</span>
-</span><span data-line="323">            <span class="k">continue</span>
-</span><span data-line="324">        <span class="n">fields</span><span class="p">[</span><span class="n">column</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_build_field_info</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
-</span><span data-line="325">
-</span><span data-line="326">    <span class="c1"># Create a base class with the config</span>
-</span><span data-line="327">    <span class="k">class</span><span class="w"> </span><span class="nc">BaseSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="328">        <span class="n">model_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ConfigDict</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="329">
-</span><span data-line="330">    <span class="c1"># Create the model with from_attributes config. The ignores are for the</span>
-</span><span data-line="331">    <span class="c1"># create_model overloads, which cannot match a **dict of field definitions:</span>
-</span><span data-line="332">    <span class="c1"># each entry may target any parameter, so the value type would have to be</span>
-</span><span data-line="333">    <span class="c1"># compatible with every named parameter at once. The cast still constrains</span>
-</span><span data-line="334">    <span class="c1"># the result. (mypy and zuban share the call-overload suppression below;</span>
-</span><span data-line="335">    <span class="c1"># basedpyright, ty, and pyrefly need their own comments and read no</span>
-</span><span data-line="336">    <span class="c1"># others'.)</span>
-</span><span data-line="337">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
-</span><span data-line="338">        <span class="s2">"type[BaseModel]"</span><span class="p">,</span>
-</span><span data-line="339">        <span class="n">create_model</span><span class="p">(</span>  <span class="c1"># pyrefly: ignore[no-matching-overload]</span>
-</span><span data-line="340">            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">Schema"</span><span class="p">,</span>
-</span><span data-line="341">            <span class="n">__base__</span><span class="o">=</span><span class="n">BaseSchema</span><span class="p">,</span>
-</span><span data-line="342">            <span class="o">**</span><span class="n">fields</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportCallIssue, reportArgumentType]</span>
-</span><span data-line="343">        <span class="p">),</span>  <span class="c1"># type: ignore[call-overload]  # ty: ignore[no-matching-overload]</span>
-</span><span data-line="344">    <span class="p">)</span></div>
+</span><span data-line="287"><span class="k">def</span><span class="w"> </span><span class="nf">sqlalchemy_to_pydantic</span><span class="p">(</span>
+</span><span data-line="288">    <span class="n">model</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">DeclarativeBase</span><span class="p">],</span>
+</span><span data-line="289">    <span class="n">include_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="290">    <span class="n">exclude_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="291">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="292">    <span class="n">for_form</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span data-line="293"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]:</span>
+</span><span data-line="294"><span class="w">    </span><span class="sd">"""</span>
+</span><span data-line="295"><span class="sd">    Generate a Pydantic model from a SQLAlchemy model.</span>
+</span><span data-line="296">
+</span><span data-line="297"><span class="sd">    Args:</span>
+</span><span data-line="298"><span class="sd">        model: SQLAlchemy model class</span>
+</span><span data-line="299"><span class="sd">        include_columns: Columns to include (None = all)</span>
+</span><span data-line="300"><span class="sd">        exclude_columns: Columns to exclude</span>
+</span><span data-line="301"><span class="sd">        for_form: If True, exclude primary key (for create/edit forms)</span>
+</span><span data-line="302">
+</span><span data-line="303"><span class="sd">    Returns:</span>
+</span><span data-line="304"><span class="sd">        Dynamically created Pydantic model</span>
+</span><span data-line="305"><span class="sd">    """</span>
+</span><span data-line="306">    <span class="n">mapper</span> <span class="o">=</span> <span class="n">inspect</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</span><span data-line="307">    <span class="n">exclude_columns</span> <span class="o">=</span> <span class="n">exclude_columns</span> <span class="ow">or</span> <span class="p">[]</span>
+</span><span data-line="308">
+</span><span data-line="309">    <span class="c1"># Get primary key column name</span>
+</span><span data-line="310">    <span class="n">pk_name</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
+</span><span data-line="311">        <span class="s2">"str | None"</span><span class="p">,</span> <span class="n">mapper</span><span class="o">.</span><span class="n">primary_key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">mapper</span><span class="o">.</span><span class="n">primary_key</span> <span class="k">else</span> <span class="kc">None</span>
+</span><span data-line="312">    <span class="p">)</span>
+</span><span data-line="313">
+</span><span data-line="314">    <span class="n">fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">FieldDefinition</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="315">
+</span><span data-line="316">    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">mapper</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+</span><span data-line="317">        <span class="k">if</span> <span class="ow">not</span> <span class="n">_should_include_column</span><span class="p">(</span>
+</span><span data-line="318">            <span class="n">column</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+</span><span data-line="319">            <span class="n">include_columns</span><span class="p">,</span>
+</span><span data-line="320">            <span class="n">exclude_columns</span><span class="p">,</span>
+</span><span data-line="321">            <span class="n">for_form</span><span class="o">=</span><span class="n">for_form</span><span class="p">,</span>
+</span><span data-line="322">            <span class="n">pk_name</span><span class="o">=</span><span class="n">pk_name</span><span class="p">,</span>
+</span><span data-line="323">        <span class="p">):</span>
+</span><span data-line="324">            <span class="k">continue</span>
+</span><span data-line="325">        <span class="n">fields</span><span class="p">[</span><span class="n">column</span><span class="o">.</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_build_field_info</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+</span><span data-line="326">
+</span><span data-line="327">    <span class="c1"># Create a base class with the config</span>
+</span><span data-line="328">    <span class="k">class</span><span class="w"> </span><span class="nc">BaseSchema</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="329">        <span class="n">model_config</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="n">ConfigDict</span><span class="p">]</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">from_attributes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="330">
+</span><span data-line="331">    <span class="c1"># Create the model with from_attributes config. The ignores are for the</span>
+</span><span data-line="332">    <span class="c1"># create_model overloads, which cannot match a **dict of field definitions:</span>
+</span><span data-line="333">    <span class="c1"># each entry may target any parameter, so the value type would have to be</span>
+</span><span data-line="334">    <span class="c1"># compatible with every named parameter at once. The cast still constrains</span>
+</span><span data-line="335">    <span class="c1"># the result. (mypy and zuban share the call-overload suppression below;</span>
+</span><span data-line="336">    <span class="c1"># basedpyright, ty, and pyrefly need their own comments and read no</span>
+</span><span data-line="337">    <span class="c1"># others'.)</span>
+</span><span data-line="338">    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span>
+</span><span data-line="339">        <span class="s2">"type[BaseModel]"</span><span class="p">,</span>
+</span><span data-line="340">        <span class="n">create_model</span><span class="p">(</span>  <span class="c1"># pyrefly: ignore[no-matching-overload]</span>
+</span><span data-line="341">            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">Schema"</span><span class="p">,</span>
+</span><span data-line="342">            <span class="n">__base__</span><span class="o">=</span><span class="n">BaseSchema</span><span class="p">,</span>
+</span><span data-line="343">            <span class="o">**</span><span class="n">fields</span><span class="p">,</span>  <span class="c1"># pyright: ignore[reportCallIssue, reportArgumentType]</span>
+</span><span data-line="344">        <span class="p">),</span>  <span class="c1"># type: ignore[call-overload]  # ty: ignore[no-matching-overload]</span>
+</span><span data-line="345">    <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">

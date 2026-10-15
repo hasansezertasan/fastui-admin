@@ -794,10 +794,11 @@ views declare them as class variables, and checkers do not accept a
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"Audit Logs"</span><span class="p">)</span>
-</span><span data-line="2"><span class="go">'audit-logs'</span>
-</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"My View!"</span><span class="p">)</span>
-</span><span data-line="4"><span class="go">'my-view'</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">fastui_admin.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">slugify</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"Audit Logs"</span><span class="p">)</span>
+</span><span data-line="3"><span class="go">'audit-logs'</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"My View!"</span><span class="p">)</span>
+</span><span data-line="5"><span class="go">'my-view'</span>
 </span></pre></div>
 </div>
 </dd></dl>
