@@ -53,6 +53,12 @@ head branches**.
 Branch protection
 -----------------
 
+Branch protection and rulesets are free on public repositories, but a
+**private** repository needs a paid GitHub plan (Pro, Team or Enterprise) for
+them to be enforced. On a free-plan private repository mark this section
+**not applicable** and skip its commands and checks.
+Continue with the remaining applicable steps.
+
 Protect ``main`` so a PR can only merge once its checks pass. Mark these check
 contexts as required (the names are the **check runs**, not the workflow files):
 
@@ -463,6 +469,13 @@ check on them
 (`renovate#31600 <https://github.com/renovatebot/renovate/issues/31600>`_), so a
 copier PR can look mergeable while carrying conflicts. Reconcile before merging:
 keep your project identity, adopt the template's tooling/config changes.
+
+Where the project maintains an overlay on a file the template also renders
+(e.g. project-specific entries in ``.vscode/launch.json`` that the template
+cannot derive from its answers), resolve the conflict in favour of the committed
+file and port only genuine template-side improvements instead of taking the
+template file wholesale. Re-applying the overlay is expected, not a merge
+failure.
 
 If the update touches dependency metadata in ``pyproject.toml`` — the
 ``dependencies`` list, a dependency group, or the optional-dependency table —
