@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/hasansezertasan/fastui-admin/actions/workflows/ci.yml/badge.svg)](https://github.com/hasansezertasan/fastui-admin/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/codecov/c/github/hasansezertasan/fastui-admin)](https://codecov.io/gh/hasansezertasan/fastui-admin)
+[![Documentation Status](https://img.shields.io/github/deployments/hasansezertasan/fastui-admin/github-pages?label=docs)](https://hasansezertasan.github.io/fastui-admin)
 [![PyPI - Version](https://img.shields.io/pypi/v/fastui-admin.svg)](https://pypi.org/project/fastui-admin)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fastui-admin.svg)](https://pypi.org/project/fastui-admin)
 [![License - MIT](https://img.shields.io/github/license/hasansezertasan/fastui-admin.svg)](https://opensource.org/licenses/MIT)

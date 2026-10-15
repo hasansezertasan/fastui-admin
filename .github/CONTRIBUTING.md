@@ -23,6 +23,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
   - [Suggesting Enhancements](#suggesting-enhancements)
   - [Your First Code Contribution](#your-first-code-contribution)
   - [Secret Scanning](#secret-scanning)
+  - [Improving The Documentation](#improving-the-documentation)
 - [Styleguides](#styleguides)
   - [Commit Messages](#commit-messages)
 - [Join The Project Team](#join-the-project-team)
@@ -222,6 +223,17 @@ If the hook flags something:
 
   Then re-run `detect-secrets audit .secrets.baseline` to triage any newly
   discovered entries before committing.
+
+### Improving The Documentation
+
+The documentation is built with [Sphinx](https://www.sphinx-doc.org/). Common
+documentation tasks:
+
+- `mise run docs-build` (or `uv run --locked tox run -e docs-build`) — build the HTML docs.
+- `mise run docs-serve` (or `uv run --locked tox run -e docs-server`) — serve them locally with live reload.
+- `uv run --locked tox run -e docs-linkcheck` — check for broken links (also runs weekly in CI).
+
+<!-- TODO @hasansezertasan: Updating, improving and correcting the documentation -->
 
 ## Styleguides
 

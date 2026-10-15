@@ -136,6 +136,52 @@ jobs:
             uv.lock
       - name: Check dependency hygiene
         run: uv run --locked tox run -e deps
+  docs-doctest:
+    name: Build and test documentation
+    # Component test jobs override tox's default env list, so keep the docs
+    # builds in their own job to preserve the generated project's documented
+    # examples. This job is aggregated by `check`, which is the required status
+    # context — so it is also where the strict (`-W`-equivalent) HTML build must
+    # run. docs-preview.yml runs the same gate but is skipped for fork PRs and
+    # is not a required context, so it can never block a merge on its own.
+    if: ${{ github.event.pull_request.draft != true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          # sphinx-last-updated-by-git needs the full history; on a depth-1 clone
+          # it warns "Git clone too shallow" on every page and the warning gate
+          # below turns each one into an error.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version-file: .python-version
+      - name: Setup uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+      - name: Set reproducible build epoch
+        # Pin Sphinx's "today"/copyright to the last commit date so the same
+        # commit always renders the same docs output (reproducible-builds.org).
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      - name: Build documentation with the warning gate
+        # docs-build pairs `sphinx-build -w` with docs/check_warnings.py, which
+        # fails on any warning outside the allowlist. docs-doctest alone is
+        # `-b doctest` with no `-W`, so without this step broken references pass
+        # every required check. Runs first: a reference that does not resolve is
+        # worth reporting before the doctests that may depend on it.
+        run: uv run --locked tox run -e docs-build
+      - name: Run documentation doctests
+        run: uv run --locked tox run -e docs-doctest
 
   test-core:
     name: Test core on ${{ matrix.os }}
@@ -324,9 +370,19 @@ jobs:
       - name: Note skipped coverage upload
         if: ${{ env.CODECOV_TOKEN_SET != 'true' && env.REPO_IS_PUBLIC != 'true' }}
         run: echo "::notice::CODECOV_TOKEN secret is not set and this repo is private — skipping the Codecov upload. See docs/maintaining/setup.rst (Repository setup) to enable coverage reporting."
+      - name: Publish coverage HTML (public repos)
+        # smokeshow uploads htmlcov to an ephemeral public URL and prints it — no
+        # account or secret required (an optional key only raises rate limits).
+        # Public repos only: a private report must not be published. Best-effort
+        # and ordered LAST — a tokenless rate-limit or outage must never fail the
+        # `check` gate nor block the authoritative Codecov/coverage.xml uploads
+        # above; smokeshow is a supplementary mirror, not load-bearing. See https://hasansezertasan.github.io/copier-pyproject/context/ci-topology/#a-tokenless-public-html-coverage-mirror-via-smokeshow.
+        if: ${{ env.REPO_IS_PUBLIC == 'true' }}
+        continue-on-error: true
+        run: uv run --no-project --with smokeshow smokeshow upload htmlcov
   check:
     if: ${{ always() && github.event.pull_request.draft != true }}
-    needs: [changes, test-core, coverage-core, coverage-report, hooks, style, deps]
+    needs: [changes, test-core, coverage-core, coverage-report, hooks, style, deps, docs-doctest]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions: {}

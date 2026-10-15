@@ -57,56 +57,45 @@ Branch protection and rulesets are free on public repositories, but a
 **private** repository needs a paid GitHub plan (Pro, Team or Enterprise) for
 them to be enforced. On a free-plan private repository mark this section
 **not applicable** and skip its commands and checks.
+Also defer the Settings App installation below until required code-owner review
+can be enforced; its review safeguard depends on branch protection.
 Continue with the remaining applicable steps.
 
-Protect ``main`` so a PR can only merge once its checks pass. Mark these check
-contexts as required (the names are the **check runs**, not the workflow files):
+This project ships its branch protection as a repository ruleset
+(``.github/rulesets/main.json``) applied by the ``ruleset-sync.yml`` workflow on
+every push to the default branch. It enforces squash-only merges, linear
+history, and the required CI checks; manual edits in the web UI are reverted on
+the next push.
 
-- ``check`` — ``ci.yml``'s aggregate gate. It is the single context that covers
-  the tests, the per-component coverage gates, style, hooks and the documentation
-  build; without it a PR whose entire test suite failed still satisfies
-  protection, because the four metadata gates below say nothing about the code.
-- ``Validate PR title`` — the Conventional Commits PR-title lint
-  (``check-pr-title.yml``), which release-please depends on.
-- ``Validate branch name`` — the Conventional Branch lint
-  (``check-branch-name.yml``), which fails a PR whose head branch name does not
-  follow the ``<type>/<description>`` format.
-- ``Verify linked issue`` — the linked-issue check (``check-linked-issues.yml``),
-  which fails a PR with no linked issue.
-- ``Task Completed Checker`` — the PR task-list gate (``task-completed-check.yml``),
-  which fails while any unticked checkbox remains in the PR description. This is
-  the name of the **check run** the action publishes, not of the job around it
-  (``Check PR task list``) — the job is green even when boxes are unticked, so
-  requiring the job name would not gate anything.
+**[HUMAN]** Create a ``REPO_ADMIN_TOKEN`` — a fine-grained PAT with
+**Administration: read and write** on this repository (the Actions
+``GITHUB_TOKEN`` cannot manage rulesets).
 
-**[AGENT]**
+**[AGENT]** Store it as a repository secret:
 
 .. code-block:: sh
 
-   gh api -X PUT repos/hasansezertasan/fastui-admin/branches/main/protection \
-     --input - <<'JSON'
-   {
-     "required_status_checks": {
-       "strict": true,
-       "contexts": ["check", "Validate PR title", "Validate branch name", "Verify linked issue", "Task Completed Checker"]
-     },
-     "enforce_admins": null,
-     "required_pull_request_reviews": null,
-     "restrictions": null
-   }
-   JSON
+   gh secret set REPO_ADMIN_TOKEN --repo hasansezertasan/fastui-admin
 
-**[CHECK]**
+**[AGENT]** Trigger the workflow once (push a change under ``.github/rulesets/``
+or run it directly):
 
 .. code-block:: sh
 
-   gh api repos/hasansezertasan/fastui-admin/branches/main/protection \
-     --jq '(.required_status_checks.strict == true) and ((["check","Validate PR title","Validate branch name","Verify linked issue","Task Completed Checker"] - (.required_status_checks.contexts // [])) == [])' | grep -qx true
+   gh workflow run ruleset-sync.yml --repo hasansezertasan/fastui-admin
 
-UI equivalent: **Settings → Branches → Add branch ruleset** (or **Add rule** for
-``main``) — enable **Require status checks to pass before merging**, then search
-for and add the five contexts above. The contexts only appear in the picker
-after each check has run at least once.
+**[CHECK]** The ``Protect main`` ruleset is applied and active — verifying the
+end state (not just that the ``REPO_ADMIN_TOKEN`` secret exists), so a repo where
+``ruleset-sync.yml`` has not yet run, failed, or had its ruleset deleted is
+correctly reported as not-done:
+
+.. code-block:: sh
+
+   gh api --paginate repos/hasansezertasan/fastui-admin/rulesets \
+     --jq 'any(.[]; .name == "Protect main" and .enforcement == "active")' | grep -qx true
+
+Until the ``REPO_ADMIN_TOKEN`` secret is set the workflow logs a notice and exits
+without error, so the repository is never blocked.
 
 .. _setup-first-pr:
 
@@ -432,6 +421,44 @@ secret is set; ``check-security.yml`` is a standalone security workflow (not par
 of the required ``check`` gate), so this does not block merges, but the scan will
 not run until it is provided.
 
+Documentation site (GitHub Pages)
+---------------------------------
+
+On release, the ``deploy-docs`` job builds the Sphinx docs and pushes the HTML
+to a ``gh-pages`` branch with ``JamesIves/github-pages-deploy-action``. GitHub
+does not serve that branch until Pages is pointed at it. The branch is created
+by the first release that runs ``deploy-docs``, so enable Pages once after that.
+
+**[AGENT]**
+
+.. code-block:: sh
+
+   gh api -X POST repos/hasansezertasan/fastui-admin/pages \
+     -f 'source[branch]=gh-pages' -f 'source[path]=/'
+
+**[CHECK]**
+
+.. code-block:: sh
+
+   gh api repos/hasansezertasan/fastui-admin/pages \
+     --jq '.source.branch == "gh-pages" and .source.path == "/"' | grep -qx true
+
+This check stays red until the first release runs ``deploy-docs`` and creates the
+``gh-pages`` branch; run it after that first release. It asserts Pages serves
+``gh-pages:/`` specifically, so a site already enabled from another source (e.g.
+``main``) is correctly reported as not-yet-serving the release docs.
+
+UI equivalent: **Settings → Pages → Build and deployment** — set **Source** to
+**Deploy from a branch**, then pick the ``gh-pages`` branch and the ``/ (root)``
+folder. Use the ``gh-pages.yml`` workflow to redeploy manually.
+
+Once Pages is enabled, ``docs-preview.yml`` also publishes a live documentation
+preview for each pull request under ``pr-preview/pr-<N>/`` on the same
+``gh-pages`` branch and comments the URL on the PR (removed automatically when
+the PR closes). Previews are built only for pull requests opened from branches
+on this repository — a fork PR receives a read-only token and is skipped — and
+require no extra setup beyond Pages.
+
 Automated dependency updates (Renovate)
 ---------------------------------------
 
@@ -507,6 +534,74 @@ turned on.
 
 UI equivalent: **Settings → General → Features** — tick **Discussions**.
 
+Optional integrations
+---------------------
+
+These are enabled in this project's Copier answers and each needs a one-time
+external setup. Until set up, they are inert — CI stays green. They are opt-in: a
+red ``[CHECK]`` here means "not configured", which is a fine state to leave.
+
+Repository settings ("Settings" App)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``.github/settings.yml`` declares this repository's description, homepage, and
+(when the ``repository_topics`` template answer is set) topics. It is applied by
+the `Settings GitHub App <https://github.com/apps/settings>`_ on every push to
+the default branch. Nothing syncs until it is installed.
+
+Before installing, enforce **Require review from Code Owners** on the default
+branch as described below. On a free-plan private repository, **defer the
+Settings App** until that safeguard can be enforced. Record this integration
+as deferred and skip its installation and check; the metadata file can stay
+in the repository without the App.
+
+**[HUMAN]** Confirm that a distinct trusted reviewer with write access can
+approve changes authored by the maintainer and is listed in CODEOWNERS for
+``.github/settings.yml`` and ``.github/CODEOWNERS``.
+A sole maintainer cannot approve their own pull requests;
+defer the Settings App until that reviewer is available.
+
+**[HUMAN]** Once that reviewer is available, use GitHub to edit
+``.github/rulesets/main.json`` and set the ``pull_request`` rule's
+``require_code_owner_review`` to ``true``.
+Land this policy change through a reviewed pull request;
+``ruleset-sync.yml`` applies it after merge.
+The shipped ruleset leaves this flag off so a solo maintainer's ordinary PRs
+remain mergeable before this optional integration is configured.
+Keep the committed source in sync; an edit only in the ruleset UI is reverted
+by the sync workflow.
+
+**[CHECK]** Prerequisite: required code-owner review is enforced on ``main``.
+If the check fails or cannot be verified, defer installation and return to that
+policy step; a CODEOWNERS file alone does not enforce review.
+
+.. code-block:: sh
+
+
+   gh api --paginate repos/hasansezertasan/fastui-admin/rules/branches/main \
+     --jq 'any(.[]; .type == "pull_request" and .parameters.require_code_owner_review == true)' | grep -qx true
+
+**[HUMAN]** Only after the prerequisite check passes, install it once on this repository (or your account) from the
+`App page <https://github.com/apps/settings>`_.
+
+**[CHECK]** No scriptable check — confirm the Settings GitHub App is installed.
+
+.. caution::
+
+   The Settings App **escalates anyone with push access to admin**: a merge to
+   the default branch syncs whatever is in ``settings.yml``. Mitigate this with
+   CODEOWNERS — this project already makes ``@hasansezertasan`` the code owner of
+   every file (``.github/CODEOWNERS``), so enabling branch protection's **Require
+   review from Code Owners** on the default branch means a ``settings.yml``
+   change cannot merge without your review. Note that with the shipped
+   ``* @hasansezertasan`` ownership this requires code-owner review for *all*
+   files (the whole branch); to scope the requirement to just ``settings.yml``,
+   narrow ``.github/CODEOWNERS`` to ``/.github/settings.yml @hasansezertasan``.
+
+The "Include in the home page" activity toggles (Releases / Packages /
+Deployments in the About sidebar) are **not** settable through any GitHub API,
+so neither this App nor any workflow can manage them — set those in the web UI.
+Labels are managed separately by ``.github/labels.yml``, not here.
 
 Optional post-launch integrations
 ---------------------------------

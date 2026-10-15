@@ -48,25 +48,25 @@ class BaseAdmin:
         middleware before deploying to production.
 
     Example:
-        ```python
-        from fastapi import FastAPI
-        from sqlalchemy.ext.asyncio import create_async_engine
+        .. code-block:: python
 
-        from fastui_admin import BaseAdmin, BaseModelView
+            from fastapi import FastAPI
+            from sqlalchemy.ext.asyncio import create_async_engine
 
-        app = FastAPI()
-        engine = create_async_engine("sqlite+aiosqlite:///./db.sqlite")
+            from fastui_admin import BaseAdmin, BaseModelView
 
-
-        class UserAdmin(BaseModelView, model=User):
-            name = "Users"
-            column_list = ["id", "username", "email"]
+            app = FastAPI()
+            engine = create_async_engine("sqlite+aiosqlite:///./db.sqlite")
 
 
-        admin = BaseAdmin(app, engine, title="My Admin")
-        admin.add_view(UserAdmin)
-        admin.mount()
-        ```
+            class UserAdmin(BaseModelView, model=User):
+                name = "Users"
+                column_list = ["id", "username", "email"]
+
+
+            admin = BaseAdmin(app, engine, title="My Admin")
+            admin.add_view(UserAdmin)
+            admin.mount()
     """
 
     # pylint: disable=too-many-instance-attributes  # config façade: one attr per option
