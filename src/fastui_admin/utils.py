@@ -175,6 +175,7 @@ def slugify(name: str) -> str:
         URL-safe slug string.
 
     Examples:
+        >>> from fastui_admin.utils import slugify
         >>> slugify("Audit Logs")
         'audit-logs'
         >>> slugify("My View!")
