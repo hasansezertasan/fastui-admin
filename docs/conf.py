@@ -94,7 +94,7 @@ html_theme_options = {
 # GitHub Pages serves a project site under ``/<repo>/``, so switcher links are
 # rooted at that base path (not the domain root); a custom root domain would set
 # ``_switcher_base = "/"`` instead.
-_switcher_base = "/fastui_admin/"
+_switcher_base = "/fastui-admin/"
 _versions_file = Path(__file__).parent / "_static" / "versions.json"
 html_context: dict[str, object] = {}
 if _versions_file.exists():
