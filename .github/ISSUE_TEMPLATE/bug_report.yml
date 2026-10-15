@@ -29,8 +29,19 @@ body:
     id: repro
     attributes:
       label: Steps to reproduce
-      description: >-
+      description: |-
         Minimal, complete steps that let a maintainer reproduce the bug. See https://stackoverflow.com/help/minimal-reproducible-example for guidance.
+
+        A single self-contained script with [PEP 723](https://peps.python.org/pep-0723/) inline metadata is ideal: maintainers can run it with `uv run bug.py`. For example:
+
+        ```python
+        # /// script
+        # dependencies = ["fastui_admin"]
+        # ///
+        import fastui_admin
+
+        # Smallest code that triggers the bug.
+        ```
     validations:
       required: true
   - type: textarea
@@ -61,7 +72,7 @@ body:
       label: OS and version
       placeholder: 'Windows 11, macOS 14, Ubuntu 24.04'
     validations:
-      required: true
+      required: false
   - type: dropdown
     id: install-method
     attributes:
@@ -69,8 +80,6 @@ body:
       options:
         - pip
         - uv
-        - uvx
-        - pipx
         - from source
         - other
     validations:
