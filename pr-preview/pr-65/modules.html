@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="./">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Modules - fastui_admin</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Repository setup" href="maintaining/setup.html" /><link rel="prev" title="Usage" href="usage.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=e1a1ceaf" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="Modules"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="index.html">
+      
+      
+      <strong>fastui_admin</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/hasansezertasan/fastui-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Modules</a></li>
+</ul>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Maintainer guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="maintaining/setup.html">Repository setup</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#admin-app-fastui-admin-base">Admin app (<code class="docutils literal notranslate"><span class="pre">fastui_admin.base</span></code>)</a><ul>
+<li><a class="reference internal" href="#fastui_admin.base.BaseAdmin"><code class="docutils literal notranslate"><span class="pre">BaseAdmin</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.base.BaseAdmin.get_relative_url"><code class="docutils literal notranslate"><span class="pre">BaseAdmin.get_relative_url()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.base.BaseAdmin.views"><code class="docutils literal notranslate"><span class="pre">BaseAdmin.views</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.base.BaseAdmin.add_view"><code class="docutils literal notranslate"><span class="pre">BaseAdmin.add_view()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.base.BaseAdmin.mount"><code class="docutils literal notranslate"><span class="pre">BaseAdmin.mount()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#views-fastui-admin-views">Views (<code class="docutils literal notranslate"><span class="pre">fastui_admin.views</span></code>)</a><ul>
+<li><a class="reference internal" href="#fastui_admin.views.AdminIndexView"><code class="docutils literal notranslate"><span class="pre">AdminIndexView</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.views.AdminIndexView.get_url"><code class="docutils literal notranslate"><span class="pre">AdminIndexView.get_url()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.views.AdminIndexView.render"><code class="docutils literal notranslate"><span class="pre">AdminIndexView.render()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.views.BaseModelView"><code class="docutils literal notranslate"><span class="pre">BaseModelView</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.views.BaseModelView.get_url"><code class="docutils literal notranslate"><span class="pre">BaseModelView.get_url()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.views.BaseModelView.get_routes"><code class="docutils literal notranslate"><span class="pre">BaseModelView.get_routes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.views.BaseView"><code class="docutils literal notranslate"><span class="pre">BaseView</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.views.BaseView.admin"><code class="docutils literal notranslate"><span class="pre">BaseView.admin</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.views.BaseView.get_url"><code class="docutils literal notranslate"><span class="pre">BaseView.get_url()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.views.BaseView.render"><code class="docutils literal notranslate"><span class="pre">BaseView.render()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#layout-fastui-admin-layout">Layout (<code class="docutils literal notranslate"><span class="pre">fastui_admin.layout</span></code>)</a><ul>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout"><code class="docutils literal notranslate"><span class="pre">MasterLayout</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.get_prebuilt_html"><code class="docutils literal notranslate"><span class="pre">MasterLayout.get_prebuilt_html()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.page_title"><code class="docutils literal notranslate"><span class="pre">MasterLayout.page_title()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.navbar"><code class="docutils literal notranslate"><span class="pre">MasterLayout.navbar()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.footer"><code class="docutils literal notranslate"><span class="pre">MasterLayout.footer()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.page"><code class="docutils literal notranslate"><span class="pre">MasterLayout.page()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.layout.MasterLayout.render"><code class="docutils literal notranslate"><span class="pre">MasterLayout.render()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#utilities-fastui-admin-utils">Utilities (<code class="docutils literal notranslate"><span class="pre">fastui_admin.utils</span></code>)</a><ul>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol"><code class="docutils literal notranslate"><span class="pre">AdminProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.base_url"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.base_url</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.title"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.title</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.views"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.views</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.layout"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.layout</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.session_maker"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.session_maker</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.AdminProtocol.get_relative_url"><code class="docutils literal notranslate"><span class="pre">AdminProtocol.get_relative_url()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.utils.FieldDefinition"><code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.utils.FieldDefinition.annotation"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.annotation</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.FieldDefinition.field_info"><code class="docutils literal notranslate"><span class="pre">FieldDefinition.field_info</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.utils.LayoutProtocol"><code class="docutils literal notranslate"><span class="pre">LayoutProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.utils.LayoutProtocol.render"><code class="docutils literal notranslate"><span class="pre">LayoutProtocol.render()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.LayoutProtocol.get_prebuilt_html"><code class="docutils literal notranslate"><span class="pre">LayoutProtocol.get_prebuilt_html()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.utils.ViewProtocol"><code class="docutils literal notranslate"><span class="pre">ViewProtocol</span></code></a><ul>
+<li><a class="reference internal" href="#fastui_admin.utils.ViewProtocol.get_url"><code class="docutils literal notranslate"><span class="pre">ViewProtocol.get_url()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#fastui_admin.utils.get_python_type"><code class="docutils literal notranslate"><span class="pre">get_python_type()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.slugify"><code class="docutils literal notranslate"><span class="pre">slugify()</span></code></a></li>
+<li><a class="reference internal" href="#fastui_admin.utils.sqlalchemy_to_pydantic"><code class="docutils literal notranslate"><span class="pre">sqlalchemy_to_pydantic()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">fastui_admin</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Modules</strong>
+        <meta itemprop="position" content="2" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue" role="main">
+          <section id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Link to this heading">#</a></h1>
+<p>An overview of the modules that make up <code class="docutils literal notranslate"><span class="pre">fastui_admin</span></code>.
+The API reference below is generated automatically from the source docstrings.</p>
+<section id="admin-app-fastui-admin-base">
+<h2>Admin app (<code class="docutils literal notranslate"><span class="pre">fastui_admin.base</span></code>)<a class="headerlink" href="#admin-app-fastui-admin-base" title="Link to this heading">#</a></h2>
+<p>Admin application, mounting and routing.</p>
+<p id="module-fastui_admin.base">Core admin class for FastUI Admin.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>FastUI Admin does NOT provide authentication, authorization, or CSRF protection.
+All admin endpoints are publicly accessible by default.
+Mutating endpoints (create/edit/delete) accept JSON POST without CSRF tokens.
+FastUI’s fetch-based forms rely on browser same-origin policy, but XSS on the same
+domain can bypass this. You MUST add your own authentication middleware and consider
+CSRF protection before deploying to production.</p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.base.BaseAdmin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.base.</span></span><span class="sig-name descname"><span class="pre">BaseAdmin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">engine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session_maker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'/admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logo_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/base.html#BaseAdmin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.base.BaseAdmin" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for implementing Admin interface.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This admin interface has NO built-in authentication.
+All CRUD endpoints are publicly accessible. Add authentication
+middleware before deploying to production.</p>
+</div>
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span>
+</span><span data-line="2"><span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_async_engine</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span><span class="w"> </span><span class="nn">fastui_admin</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseAdmin</span><span class="p">,</span> <span class="n">BaseModelView</span>
+</span><span data-line="5">
+</span><span data-line="6"><span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+</span><span data-line="7"><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">"sqlite+aiosqlite:///./db.sqlite"</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">BaseModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="11">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Users"</span>
+</span><span data-line="12">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">]</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">admin</span> <span class="o">=</span> <span class="n">BaseAdmin</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">engine</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"My Admin"</span><span class="p">)</span>
+</span><span data-line="16"><span class="n">admin</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">UserAdmin</span><span class="p">)</span>
+</span><span data-line="17"><span class="n">admin</span><span class="o">.</span><span class="n">mount</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<p>Initialize the admin interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.app">¶</a> – FastAPI or Starlette application to mount admin on.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.engine"></span><strong>engine</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.engine">¶</a> – Async SQLAlchemy engine. Sync engines are not supported.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.session_maker"></span><strong>session_maker</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.session_maker">¶</a> – Optional async session maker.
+If not provided, created from engine.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.title"></span><strong>title</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.title">¶</a> – Admin interface title.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.base_url"></span><strong>base_url</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.base_url">¶</a> – Base URL path for admin (default: “/admin”).</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.route_name"></span><strong>route_name</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.route_name">¶</a> – Name for the mounted admin route.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.logo_url"></span><strong>logo_url</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.logo_url">¶</a> – URL of logo image.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.index_view"></span><strong>index_view</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.index_view">¶</a> – Custom index view class.</p></li>
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.params.debug"></span><strong>debug</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.params.debug">¶</a> – Enable debug mode.</p></li>
+<li><p><strong>app</strong> (<em>FastAPI</em><em> | </em><em>Starlette</em>)</p></li>
+<li><p><strong>engine</strong> (<em>AsyncEngine</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>session_maker</strong> (<em>async_sessionmaker</em><em>[</em><em>AsyncSession</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>base_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>route_name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>logo_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>index_view</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><em>type</em></a><em>[</em><a class="reference internal" href="#fastui_admin.views.AdminIndexView" title="fastui_admin.views.AdminIndexView"><em>AdminIndexView</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.15)"><strong>TypeError</strong></a> – If neither engine nor session_maker is provided.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.base.BaseAdmin.get_relative_url">
+<span class="sig-name descname"><span class="pre">get_relative_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/base.html#BaseAdmin.get_relative_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.base.BaseAdmin.get_relative_url" title="Link to this definition">#</a></dt>
+<dd><p>Strip base_url prefix to produce a relative path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Path relative to the admin mount point.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.base.BaseAdmin.views">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">views</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fastui_admin.views.BaseView" title="fastui_admin.views.BaseView"><span class="pre">BaseView</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fastui_admin.base.BaseAdmin.views" title="Link to this definition">#</a></dt>
+<dd><p>All registered views (read-only for navbar).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.base.BaseAdmin.add_view">
+<span class="sig-name descname"><span class="pre">add_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">view</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/base.html#BaseAdmin.add_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.base.BaseAdmin.add_view" title="Link to this definition">#</a></dt>
+<dd><p>Add a view to the admin interface.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.base.BaseAdmin.add_view.params.view"></span><strong>view</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.base.BaseAdmin.add_view.params.view">¶</a> – View class to add (will be instantiated with admin reference).
+Typed as <code class="docutils literal notranslate"><span class="pre">object</span></code> because non-class arguments are validated
+at runtime (see Raises) rather than rejected by callers’ checkers.</p></li>
+<li><p><strong>view</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.15)"><strong>RuntimeError</strong></a> – If called after mount().</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.15)"><strong>TypeError</strong></a> – If view is not a BaseView subclass.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.base.BaseAdmin.mount">
+<span class="sig-name descname"><span class="pre">mount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/base.html#BaseAdmin.mount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.base.BaseAdmin.mount" title="Link to this definition">#</a></dt>
+<dd><p>Mount the admin interface to the application.</p>
+<p>This should be called after all views are added.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="views-fastui-admin-views">
+<h2>Views (<code class="docutils literal notranslate"><span class="pre">fastui_admin.views</span></code>)<a class="headerlink" href="#views-fastui-admin-views" title="Link to this heading">#</a></h2>
+<p>View hierarchy and CRUD endpoints.</p>
+<p id="module-fastui_admin.views">View classes for FastUI Admin.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.views.AdminIndexView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.views.</span></span><span class="sig-name descname"><span class="pre">AdminIndexView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">admin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#AdminIndexView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.AdminIndexView" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fastui_admin.views.BaseView" title="fastui_admin.views.BaseView"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseView</span></code></a></p>
+<p>Default index/dashboard view for the admin interface.</p>
+<p>Initialize view with admin reference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.views.AdminIndexView.params.admin"></span><strong>admin</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.views.AdminIndexView.params.admin">¶</a> – The BaseAdmin instance this view belongs to.</p></li>
+<li><p><strong>admin</strong> (<a class="reference internal" href="#fastui_admin.utils.AdminProtocol" title="fastui_admin.utils.AdminProtocol"><em>AdminProtocol</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.AdminIndexView.get_url">
+<span class="sig-name descname"><span class="pre">get_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#AdminIndexView.get_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.AdminIndexView.get_url" title="Link to this definition">#</a></dt>
+<dd><p>Index view is at root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Base URL of the admin interface.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.AdminIndexView.render">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#AdminIndexView.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.AdminIndexView.render" title="Link to this definition">#</a></dt>
+<dd><p>Render dashboard with welcome message and links to model views.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of FastUI components.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>_request</strong> (<em>Request</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[c.AnyComponent]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseModelView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.views.</span></span><span class="sig-name descname"><span class="pre">BaseModelView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">admin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseModelView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseModelView" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#fastui_admin.views.BaseView" title="fastui_admin.views.BaseView"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseView</span></code></a></p>
+<p>View for SQLAlchemy model CRUD operations.</p>
+<p>Only integer primary keys are currently supported.</p>
+<dl>
+<dt>Usage:</dt><dd><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span><span class="w"> </span><span class="nc">UserAdmin</span><span class="p">(</span><span class="n">BaseModelView</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">User</span><span class="p">):</span>
+</span><span data-line="2">    <span class="n">name</span> <span class="o">=</span> <span class="s2">"Users"</span>
+</span><span data-line="3">    <span class="n">column_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"id"</span><span class="p">,</span> <span class="s2">"username"</span><span class="p">,</span> <span class="s2">"email"</span><span class="p">]</span>
+</span><span data-line="4">    <span class="n">page_size</span> <span class="o">=</span> <span class="mi">25</span>
+</span></pre></div>
+</div>
+</dd>
+</dl>
+<p>Initialize model view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>admin</strong> (<a class="reference internal" href="#fastui_admin.utils.AdminProtocol" title="fastui_admin.utils.AdminProtocol"><em>AdminProtocol</em></a>)</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseModelView.get_url">
+<span class="sig-name descname"><span class="pre">get_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseModelView.get_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseModelView.get_url" title="Link to this definition">#</a></dt>
+<dd><p>Get base URL for this model view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Base URL for this model view.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseModelView.get_routes">
+<span class="sig-name descname"><span class="pre">get_routes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseModelView.get_routes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseModelView.get_routes" title="Link to this definition">#</a></dt>
+<dd><p>Get all routes for this model view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of routes for this model view.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<em>Route</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseView">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.views.</span></span><span class="sig-name descname"><span class="pre">BaseView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">admin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseView"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseView" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base class for all admin views.</p>
+<p>Provides common functionality for visibility, URL generation, and rendering.</p>
+<p>Initialize view with admin reference.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.views.BaseView.params.admin"></span><strong>admin</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.views.BaseView.params.admin">¶</a> – The BaseAdmin instance this view belongs to.</p></li>
+<li><p><strong>admin</strong> (<a class="reference internal" href="#fastui_admin.utils.AdminProtocol" title="fastui_admin.utils.AdminProtocol"><em>AdminProtocol</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseView.admin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">admin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fastui_admin.utils.AdminProtocol" title="fastui_admin.utils.AdminProtocol"><span class="pre">AdminProtocol</span></a></em><a class="headerlink" href="#fastui_admin.views.BaseView.admin" title="Link to this definition">#</a></dt>
+<dd><p>Admin instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseView.get_url">
+<span class="sig-name descname"><span class="pre">get_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseView.get_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseView.get_url" title="Link to this definition">#</a></dt>
+<dd><p>Get the URL for this view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>URL for this view.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.views.BaseView.render">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_request</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/views.html#BaseView.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.views.BaseView.render" title="Link to this definition">#</a></dt>
+<dd><p>Render view components. Override in subclasses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of FastUI components.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>_request</strong> (<em>Request</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[c.AnyComponent]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="layout-fastui-admin-layout">
+<h2>Layout (<code class="docutils literal notranslate"><span class="pre">fastui_admin.layout</span></code>)<a class="headerlink" href="#layout-fastui-admin-layout" title="Link to this heading">#</a></h2>
+<p>Page shell, navbar and footer.</p>
+<p id="module-fastui_admin.layout">Layout system for FastUI Admin pages.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.layout.</span></span><span class="sig-name descname"><span class="pre">MasterLayout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">admin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Admin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logo_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Layout manager for admin pages.</p>
+<p>Handles consistent page structure: navbar, content area, footer.</p>
+<p>Initialize the layout manager.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>admin</strong> (<a class="reference internal" href="#fastui_admin.utils.AdminProtocol" title="fastui_admin.utils.AdminProtocol"><em>AdminProtocol</em></a>)</p></li>
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p></li>
+<li><p><strong>logo_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.get_prebuilt_html">
+<span class="sig-name descname"><span class="pre">get_prebuilt_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_path_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_path_strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.get_prebuilt_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.get_prebuilt_html" title="Link to this definition">#</a></dt>
+<dd><p>Get FastUI prebuilt HTML for the SPA shell.</p>
+<p>Serve the SPA shell that loads the React frontend.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Rendered HTML string.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>api_root_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>api_path_mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.15)"><em>Literal</em></a><em>[</em><em>'append'</em><em>, </em><em>'query'</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>api_path_strip</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.page_title">
+<span class="sig-name descname"><span class="pre">page_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.page_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.page_title" title="Link to this definition">#</a></dt>
+<dd><p>Create page title component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Page title component.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>text</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>PageTitle</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.navbar">
+<span class="sig-name descname"><span class="pre">navbar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.navbar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.navbar" title="Link to this definition">#</a></dt>
+<dd><p>Build navigation bar with links to all visible views.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Navigation bar component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Navbar</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.footer">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">footer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.footer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.footer" title="Link to this definition">#</a></dt>
+<dd><p>Build footer component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Footer component.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Footer</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.page">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">page</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">components</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.page"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.page" title="Link to this definition">#</a></dt>
+<dd><p>Wrap components in a Page container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Page container component.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.15)"><em>Annotated</em></a><em>[</em><em>Text</em><em> | </em><em>Paragraph</em><em> | </em><em>PageTitle</em><em> | </em><em>Div</em><em> | </em><em>Page</em><em> | </em><em>Heading</em><em> | </em><em>Markdown</em><em> | </em><em>Code</em><em> | </em><em>Json</em><em> | </em><em>Button</em><em> | </em><em>Link</em><em> | </em><em>LinkList</em><em> | </em><em>Navbar</em><em> | </em><em>Footer</em><em> | </em><em>Modal</em><em> | </em><em>ServerLoad</em><em> | </em><em>Image</em><em> | </em><em>Iframe</em><em> | </em><em>Video</em><em> | </em><em>FireEvent</em><em> | </em><em>Error</em><em> | </em><em>Spinner</em><em> | </em><em>Custom</em><em> | </em><em>Table</em><em> | </em><em>Pagination</em><em> | </em><em>Display</em><em> | </em><em>Details</em><em> | </em><em>Form</em><em> | </em><em>FormFieldInput</em><em> | </em><em>FormFieldTextarea</em><em> | </em><em>FormFieldBoolean</em><em> | </em><em>FormFieldFile</em><em> | </em><em>FormFieldSelect</em><em> | </em><em>FormFieldSelectSearch</em><em> | </em><em>ModelForm</em><em> | </em><em>Toast</em><em>, </em><em>FieldInfo</em><em>(</em><em>annotation=NoneType</em><em>, </em><em>required=True</em><em>, </em><em>discriminator='type'</em><em>)</em><em>]</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Page</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.layout.MasterLayout.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">components</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/layout.html#MasterLayout.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.layout.MasterLayout.render" title="Link to this definition">#</a></dt>
+<dd><p>Render full page with navbar, content, and footer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Components ready to be serialized as JSON response.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>components</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.15)"><em>Annotated</em></a><em>[</em><em>Text</em><em> | </em><em>Paragraph</em><em> | </em><em>PageTitle</em><em> | </em><em>Div</em><em> | </em><em>Page</em><em> | </em><em>Heading</em><em> | </em><em>Markdown</em><em> | </em><em>Code</em><em> | </em><em>Json</em><em> | </em><em>Button</em><em> | </em><em>Link</em><em> | </em><em>LinkList</em><em> | </em><em>Navbar</em><em> | </em><em>Footer</em><em> | </em><em>Modal</em><em> | </em><em>ServerLoad</em><em> | </em><em>Image</em><em> | </em><em>Iframe</em><em> | </em><em>Video</em><em> | </em><em>FireEvent</em><em> | </em><em>Error</em><em> | </em><em>Spinner</em><em> | </em><em>Custom</em><em> | </em><em>Table</em><em> | </em><em>Pagination</em><em> | </em><em>Display</em><em> | </em><em>Details</em><em> | </em><em>Form</em><em> | </em><em>FormFieldInput</em><em> | </em><em>FormFieldTextarea</em><em> | </em><em>FormFieldBoolean</em><em> | </em><em>FormFieldFile</em><em> | </em><em>FormFieldSelect</em><em> | </em><em>FormFieldSelectSearch</em><em> | </em><em>ModelForm</em><em> | </em><em>Toast</em><em>, </em><em>FieldInfo</em><em>(</em><em>annotation=NoneType</em><em>, </em><em>required=True</em><em>, </em><em>discriminator='type'</em><em>)</em><em>]</em>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated" title="(in Python v3.15)"><em>Annotated</em></a>[<em>Text</em> | <em>Paragraph</em> | <em>PageTitle</em> | <em>Div</em> | <em>Page</em> | <em>Heading</em> | <em>Markdown</em> | <em>Code</em> | <em>Json</em> | <em>Button</em> | <em>Link</em> | <em>LinkList</em> | <em>Navbar</em> | <em>Footer</em> | <em>Modal</em> | <em>ServerLoad</em> | <em>Image</em> | <em>Iframe</em> | <em>Video</em> | <em>FireEvent</em> | <em>Error</em> | <em>Spinner</em> | <em>Custom</em> | <em>Table</em> | <em>Pagination</em> | <em>Display</em> | <em>Details</em> | <em>Form</em> | <em>FormFieldInput</em> | <em>FormFieldTextarea</em> | <em>FormFieldBoolean</em> | <em>FormFieldFile</em> | <em>FormFieldSelect</em> | <em>FormFieldSelectSearch</em> | <em>ModelForm</em> | <em>Toast</em>, FieldInfo(annotation=NoneType, required=True, discriminator=’type’)]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="utilities-fastui-admin-utils">
+<h2>Utilities (<code class="docutils literal notranslate"><span class="pre">fastui_admin.utils</span></code>)<a class="headerlink" href="#utilities-fastui-admin-utils" title="Link to this heading">#</a></h2>
+<p>Dependency-free helpers and cross-module protocols.</p>
+<p id="module-fastui_admin.utils">Utility functions for FastUI Admin.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">AdminProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#AdminProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.AdminProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Structural interface for the admin application.</p>
+<p>Lets <code class="docutils literal notranslate"><span class="pre">views</span></code> and <code class="docutils literal notranslate"><span class="pre">layout</span></code> reference the admin without importing
+<code class="docutils literal notranslate"><span class="pre">fastui_admin.base</span></code> (which would close an import cycle: base already
+imports both modules). <code class="docutils literal notranslate"><span class="pre">BaseAdmin</span></code> satisfies this structurally.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.base_url">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">base_url</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></em><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.base_url" title="Link to this definition">#</a></dt>
+<dd><p>Base URL path the admin is mounted on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.title">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">title</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><span class="pre">str</span></a></em><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.title" title="Link to this definition">#</a></dt>
+<dd><p>Admin interface title.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.views">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">views</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#fastui_admin.utils.ViewProtocol" title="fastui_admin.utils.ViewProtocol"><span class="pre">ViewProtocol</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.views" title="Link to this definition">#</a></dt>
+<dd><p>Registered views for navigation.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.layout">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">layout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#fastui_admin.utils.LayoutProtocol" title="fastui_admin.utils.LayoutProtocol"><span class="pre">LayoutProtocol</span></a></em><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.layout" title="Link to this definition">#</a></dt>
+<dd><p>Page layout renderer.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.session_maker">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">session_maker</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">async_sessionmaker</span><span class="p"><span class="pre">[</span></span><span class="pre">AsyncSession</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.session_maker" title="Link to this definition">#</a></dt>
+<dd><p>Async session maker for database access.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.utils.AdminProtocol.get_relative_url">
+<span class="sig-name descname"><span class="pre">get_relative_url</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#AdminProtocol.get_relative_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.AdminProtocol.get_relative_url" title="Link to this definition">#</a></dt>
+<dd><p>Strip the base URL prefix from a path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.utils.FieldDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">FieldDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">field_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#FieldDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.FieldDefinition" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a></p>
+<p>A <code class="docutils literal notranslate"><span class="pre">create_model</span></code> field definition: (type, FieldInfo) pair.</p>
+<p>Create new instance of FieldDefinition(annotation, field_info)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>annotation</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><em>object</em></a>)</p></li>
+<li><p><strong>field_info</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><em>object</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fastui_admin.utils.FieldDefinition.annotation">
+<span class="sig-name descname"><span class="pre">annotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></em><a class="headerlink" href="#fastui_admin.utils.FieldDefinition.annotation" title="Link to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="fastui_admin.utils.FieldDefinition.field_info">
+<span class="sig-name descname"><span class="pre">field_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.15)"><span class="pre">object</span></a></em><a class="headerlink" href="#fastui_admin.utils.FieldDefinition.field_info" title="Link to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.utils.LayoutProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">LayoutProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#LayoutProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.LayoutProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Structural interface for the page layout.</p>
+<p>Lets views render pages without importing <code class="docutils literal notranslate"><span class="pre">fastui_admin.layout</span></code>
+(or <code class="docutils literal notranslate"><span class="pre">base</span></code>). <code class="docutils literal notranslate"><span class="pre">MasterLayout</span></code> satisfies this structurally.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.utils.LayoutProtocol.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">components</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#LayoutProtocol.render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.LayoutProtocol.render" title="Link to this definition">#</a></dt>
+<dd><p>Render a full page from components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>components</strong> (<em>c.AnyComponent</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)">list</a>[c.AnyComponent]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.utils.LayoutProtocol.get_prebuilt_html">
+<span class="sig-name descname"><span class="pre">get_prebuilt_html</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_root_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_path_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">api_path_strip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#LayoutProtocol.get_prebuilt_html"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.LayoutProtocol.get_prebuilt_html" title="Link to this definition">#</a></dt>
+<dd><p>Render the SPA shell HTML.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>api_root_url</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>api_path_mode</strong> (<em>Literal</em><em>[</em><em>'append'</em><em>, </em><em>'query'</em><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>api_path_strip</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="fastui_admin.utils.ViewProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">ViewProtocol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#ViewProtocol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.ViewProtocol" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.15)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Structural interface for admin views.</p>
+<p>Lets <code class="docutils literal notranslate"><span class="pre">views</span></code> and <code class="docutils literal notranslate"><span class="pre">layout</span></code> reference registered views without importing
+<code class="docutils literal notranslate"><span class="pre">fastui_admin.base</span></code> (which would close an import cycle: base already
+imports both modules). <code class="docutils literal notranslate"><span class="pre">BaseView</span></code> satisfies this structurally.</p>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code>/<code class="docutils literal notranslate"><span class="pre">is_visible</span></code> are <code class="docutils literal notranslate"><span class="pre">ClassVar</span></code> (not read-only properties) because
+views declare them as class variables, and checkers do not accept a
+<code class="docutils literal notranslate"><span class="pre">ClassVar</span></code> as the implementation of a read-only property member.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="fastui_admin.utils.ViewProtocol.get_url">
+<span class="sig-name descname"><span class="pre">get_url</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#ViewProtocol.get_url"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.ViewProtocol.get_url" title="Link to this definition">#</a></dt>
+<dd><p>URL path for the view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fastui_admin.utils.get_python_type">
+<span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">get_python_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sa_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#get_python_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.get_python_type" title="Link to this definition">#</a></dt>
+<dd><p>Get Python type from SQLAlchemy column type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.utils.get_python_type.params.sa_type"></span><strong>sa_type</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.utils.get_python_type.params.sa_type">¶</a> – SQLAlchemy column type to map.</p></li>
+<li><p><strong>sa_type</strong> (<em>TypeEngine</em><em>[</em><em>_T</em><em>]</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapped Python type, or str for unmapped types such as JSON or ARRAY.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)">type</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fastui_admin.utils.slugify">
+<span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">slugify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#slugify"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.slugify" title="Link to this definition">#</a></dt>
+<dd><p>Convert a name to a URL-safe slug.</p>
+<p>Lowercases the name and replaces any non-alphanumeric characters with hyphens.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>URL-safe slug string.</p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)">str</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"Audit Logs"</span><span class="p">)</span>
+</span><span data-line="2"><span class="go">'audit-logs'</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">slugify</span><span class="p">(</span><span class="s2">"My View!"</span><span class="p">)</span>
+</span><span data-line="4"><span class="go">'my-view'</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="fastui_admin.utils.sqlalchemy_to_pydantic">
+<span class="sig-prename descclassname"><span class="pre">fastui_admin.utils.</span></span><span class="sig-name descname"><span class="pre">sqlalchemy_to_pydantic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_columns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">for_form</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fastui_admin/utils.html#sqlalchemy_to_pydantic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fastui_admin.utils.sqlalchemy_to_pydantic" title="Link to this definition">#</a></dt>
+<dd><p>Generate a Pydantic model from a SQLAlchemy model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="fastui_admin.utils.sqlalchemy_to_pydantic.params.model"></span><strong>model</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.utils.sqlalchemy_to_pydantic.params.model">¶</a> – SQLAlchemy model class</p></li>
+<li><p><span class="target" id="fastui_admin.utils.sqlalchemy_to_pydantic.params.include_columns"></span><strong>include_columns</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.utils.sqlalchemy_to_pydantic.params.include_columns">¶</a> – Columns to include (None = all)</p></li>
+<li><p><span class="target" id="fastui_admin.utils.sqlalchemy_to_pydantic.params.exclude_columns"></span><strong>exclude_columns</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.utils.sqlalchemy_to_pydantic.params.exclude_columns">¶</a> – Columns to exclude</p></li>
+<li><p><span class="target" id="fastui_admin.utils.sqlalchemy_to_pydantic.params.for_form"></span><strong>for_form</strong><a class="paramlink headerlink reference internal" href="#fastui_admin.utils.sqlalchemy_to_pydantic.params.for_form">¶</a> – If True, exclude primary key (for create/edit forms)</p></li>
+<li><p><strong>model</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)"><em>type</em></a><em>[</em><em>DeclarativeBase</em><em>]</em>)</p></li>
+<li><p><strong>include_columns</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>exclude_columns</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.15)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.15)"><em>str</em></a><em>] </em><em>| </em><em>None</em>)</p></li>
+<li><p><strong>for_form</strong> (<a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.15)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dynamically created Pydantic model</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#type" title="(in Python v3.15)">type</a>[BaseModel]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="usage.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">Usage</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="maintaining/setup.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Repository setup</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2026, Hasan Sezer Taşan</p>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/hasansezertasan/fastui-admin" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="_static/togglebutton.js?v=b8b12719"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="_static/shibuya.js?v=50760d75"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script></body>
+</html>
