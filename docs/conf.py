@@ -82,7 +82,7 @@ html_theme = "shibuya"
 html_title = "fastui_admin"
 html_theme_options = {
     "accent_color": "amber",
-    "github_url": "https://github.com/hasansezertasan/fastui_admin",
+    "github_url": "https://github.com/hasansezertasan/fastui-admin",
 }
 
 # -- Versioned docs switcher ---------------------------------------------------

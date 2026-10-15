@@ -15,7 +15,7 @@ repository:
   description: "Build better Admin UIs faster."
   # The generated project's docs site (GitHub Pages). Change if you host docs
   # elsewhere.
-  homepage: "https://hasansezertasan.github.io/fastui_admin"
+  homepage: "https://hasansezertasan.github.io/fastui-admin"
   # Encodes the squash-merge policy release-please REQUIRES (see the
   # "Repository setup" guide, docs/maintaining/setup.rst) as code, so it
   # survives a settings drift.
