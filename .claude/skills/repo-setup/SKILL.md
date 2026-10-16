@@ -77,12 +77,6 @@ exit 0 means done. On a red check, branch on the step's class:
 3. **Required `[AGENT]` + red** → run the `[AGENT]` command, re-run the
    `[CHECK]`. Green → continue. Still red → record it as a **blocker** (with the
    command output) and continue; do not abort the rest of the walk.
-   Before running the branch-protection `[AGENT]` command, snapshot the current
-   protection (`gh api repos/<owner>/<repo>/branches/main/protection`); the
-   command is a whole-resource `PUT` that writes `null` for review, admin, and
-   push restrictions, so re-apply any existing
-   `required_pull_request_reviews`/`enforce_admins`/`restrictions` afterwards
-   instead of silently clearing them (or get approval first).
 4. **Required `[HUMAN]` + red** (or a "no scriptable check" step) → emit a
    handoff block — the exact browser instruction from the doc, verbatim and
    copy-pasteable — then either wait for the user to confirm and re-run the
