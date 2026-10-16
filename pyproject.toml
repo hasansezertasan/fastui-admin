@@ -17,6 +17,7 @@ keywords = [
   "admin",
   "sqlalchemy",
   "dashboard",
+  "sphinx",
 ]
 classifiers = [
   "Development Status :: 1 - Planning",
@@ -56,6 +57,7 @@ dependencies = [
 
 [project.urls]
 changelog = "https://github.com/hasansezertasan/fastui-admin/blob/main/CHANGELOG.md"
+documentation = "https://hasansezertasan.github.io/fastui-admin"
 homepage = "https://github.com/hasansezertasan/fastui-admin"
 issues = "https://github.com/hasansezertasan/fastui-admin/issues"
 releasenotes = "https://github.com/hasansezertasan/fastui-admin/releases"
@@ -80,6 +82,7 @@ style = [
   "pyrefly==1.2.0",
   "ruff==0.16.1",
   "slotscheck==0.21.0",
+  "sphinx-lint==1.0.2",
   "taplo==0.9.3",
   "ty==0.0.66",
   "typos==1.49.0",
@@ -109,6 +112,24 @@ test = [
   "greenlet==3.5.6",
   "aiosqlite==0.22.1",
   "httpx==0.28.1",
+]
+docs = [
+  "sphinx==8.1.3",
+  "shibuya==2026.7.12",
+  "sphinx-autobuild==2024.10.3", # 2025.x drops Python 3.10 (requires-python >= 3.11)
+  "sphinx-copybutton==0.5.2",
+  "sphinx-design==0.6.1", # 0.7.0 drops Python 3.10 (requires-python >= 3.11)
+  "sphinx-togglebutton==0.4.5",
+  "sphinx-paramlinks==0.6.0",
+  "auto-pytabs[sphinx]==0.5.0",
+  "myst-parser==4.0.1",
+  # Per-page "last updated" footer sourced from git commit dates (https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#per-page-last-updated-comes-from-git-history);
+  # offline, no network. Works from full history (docs CI checks out depth 0).
+  "sphinx-last-updated-by-git==0.3.8",
+  # PEP 440 version parsing/sorting used by tools/build_docs.py to order
+  # published versions and pick the `latest` alias (https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages). Also a Sphinx
+  # transitive dependency; pinned here for the explicit direct use.
+  "packaging>=24.0",
 ]
 tool = [
   "commitizen==4.17.0",
@@ -169,6 +190,7 @@ include = [
   "LICENSE",
   "/src",
   "/tests",
+  "/docs/examples",
 ]
 
 
@@ -287,8 +309,14 @@ paths = ["src", "tests"]
 # worker probe script (neither ships in the wheel; pytest and anyio come from
 # the dev tooling).
 extend_exclude = [
+  "docs/conf.py",
 ]
 known_first_party = ["fastui_admin"]
+
+[tool.deptry.per_rule_ignores]
+# tools/build_docs.py imports `packaging`, pinned in the `docs` group for that
+# script alone, so deptry reads it as a misplaced dev dependency.
+DEP004 = ["packaging"]
 
 
 [tool.slotscheck]
@@ -332,7 +360,7 @@ fix = true
 output-format = "full"
 preview = true
 show-fixes = true
-src = ["src", "tests", "examples"]
+src = ["src", "tests", "examples", "docs/examples"]
 target-version = "py310"
 unsafe-fixes = true
 
@@ -392,6 +420,17 @@ convention = "pep257"
 "src/fastui_admin/__init__.py" = ["F401"]
 "tests/**/*.py" = ["S101", "PLR2004", "PLC2701", "DOC201", "TID252"]
 "examples/**/*.py" = ["INP001"]
+# Documentation examples are importable modules tested by
+# ``tests/test_docs_examples.py``; they are not application packages.
+"docs/examples/**/*.py" = ["INP001"]
+# The Sphinx config is a standalone module, not part of an importable package.
+"docs/conf.py" = ["INP001"]
+# The docs warning-allowlist gate is a standalone script (not an importable
+# package) whose whole job is to print GitHub `::error::` annotations to stdout.
+"docs/check_warnings.py" = ["INP001", "T201"]
+# The versioned-docs build orchestrator is a standalone CLI script under tools/,
+# not part of an importable package (https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages).
+"tools/build_docs.py" = ["INP001"]
 
 
 [tool.ruff.lint.pyupgrade]
@@ -403,7 +442,7 @@ parenthesize-tuple-in-subscript = true
 
 
 [tool.mypy]
-files = ["src"]
+files = ["src", "docs/examples"]
 pretty = true
 python_version = "3.10"
 strict = true
@@ -411,7 +450,7 @@ strict = true
 
 [tool.basedpyright]
 exclude = [".venv"]
-include = ["src/fastui_admin"]
+include = ["src/fastui_admin", "docs/examples"]
 pythonVersion = "3.10"
 venv = ".venv"
 # venvPath is the directory *containing* the venv, not the venv itself; ".venv"
@@ -421,7 +460,7 @@ venvPath = "."
 
 
 [tool.ty.src]
-include = ["src", "tests"]
+include = ["src", "tests", "docs/examples"]
 respect-ignore-files = false
 
 
@@ -435,11 +474,11 @@ error-on-warning = true
 
 [tool.pyrefly]
 python-version = "3.10"
-project-includes = ["src"]
+project-includes = ["src", "docs/examples"]
 
 [tool.pylint.main]
 # pylint runs as an always-on gate that deliberately overlaps ruff's PL* rules.
-# Its canonical invocation is `pylint src`, so it never descends into tests; this
+# Its canonical invocation is `pylint src docs/examples`, so it never descends into tests; this
 # ignore-paths is a defensive scope guard for broader invocations (`pylint .`,
 # filename-passing hooks). Tests are linted by ruff, not pylint.
 ignore-paths = ["^tests/.*$"]
@@ -499,6 +538,9 @@ extend-exclude = [
 # ``tox -e worker`` when a broker is up (e.g. inside the devcontainer).
 env_list = [
   "style",
+  # Inline ``>>>`` snippets are part of the tested-documentation contract,
+  # so run them in the default CI ``tox run`` invocation.
+  "docs-doctest",
   "3.14",
   "3.13",
   "3.12",
@@ -592,10 +634,12 @@ commands = [
     "zuban",
     "check",
     "src",
+    "docs/examples",
   ],
   [
     "pylint",
     "src",
+    "docs/examples",
   ],
   [
     "python",
@@ -655,6 +699,10 @@ commands = [
   [
     "ec",
   ],
+  [
+    "sphinx-lint",
+    "docs",
+  ],
   # Collects (does not run) the suite and flags fixtures that are never used --
   # cheap, deterministic, and a natural fit next to the other whole-program
   # analyzers above (lint-imports, slotscheck).
@@ -705,3 +753,57 @@ description = "Run prek hooks"
 # installing the wheel here too would only be swapped for that install each run.
 package = "skip"
 runner = "uv-venv-lock-runner"
+
+
+[tool.tox.env.docs-build]
+# Write the warning stream to a file (`-w`) instead of `-W` turning the first
+# warning into a hard error, then let docs/check_warnings.py own the pass/fail:
+# it diffs the emitted warnings against the docs/expected_warnings.txt allowlist,
+# failing on both unexpected new warnings and expected ones that vanished.
+commands = [
+  ["sphinx-build", "-w", "docs/_build/warnings.txt", "-b", "html", "docs", "docs/_build/html"],
+  ["python", "docs/check_warnings.py"],
+]
+dependency_groups = ["docs"]
+description = "Build Docs"
+runner = "uv-venv-lock-runner"
+# Keep build log output unbuffered/ordered. Reproducible builds pin Sphinx's
+# "today"/copyright to SOURCE_DATE_EPOCH, which the CI docs steps
+# (docs-preview.yml, release.yml) export from the last commit date before
+# invoking sphinx-build directly. Local `tox` runs deliberately do NOT export
+# it: an empty value ("{env:SOURCE_DATE_EPOCH:}") is *present but blank*, which
+# breaks hatchling's get_reproducible_timestamp (`int("")`), so we leave it
+# unset locally and conf.py falls back to the current year.
+set_env = { PYTHONUNBUFFERED = "1" }
+
+
+[tool.tox.env.docs-server]
+# ``--ignore`` the machine-generated ``docs/_generated/`` tree: ``conf.py``
+# rewrites it on every Sphinx build, so watching it would make each rebuild
+# trigger the next in an endless live-reload loop.
+commands = [["sphinx-autobuild", "--ignore", "*/_generated/*", "docs", "docs/_build/html"]]
+dependency_groups = ["docs"]
+description = "Start the live-reloading docs server"
+runner = "uv-venv-lock-runner"
+set_env = { PYTHONUNBUFFERED = "1" }
+
+
+[tool.tox.env.docs-doctest]
+# ``literalinclude`` keeps complete examples in tested Python modules; this
+# separate builder executes the occasional ``>>>`` snippet that belongs inline
+# with prose.
+commands = [["sphinx-build", "-b", "doctest", "docs", "docs/_build/doctest"]]
+dependency_groups = ["docs"]
+description = "Run documentation doctests"
+runner = "uv-venv-lock-runner"
+set_env = { PYTHONUNBUFFERED = "1" }
+
+
+[tool.tox.env.docs-linkcheck]
+# On-demand link checker. Also run weekly (non-blocking) by docs-linkcheck.yml.
+# Hits the network, so it is deliberately not part of the `style` env or PR CI.
+commands = [["sphinx-build", "-b", "linkcheck", "docs", "docs/_build/linkcheck"]]
+dependency_groups = ["docs"]
+description = "Check documentation for broken links"
+runner = "uv-venv-lock-runner"
+set_env = { PYTHONUNBUFFERED = "1" }

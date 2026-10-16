@@ -529,6 +529,9 @@ Gemfile.lock
 # Refreshes therefore come from a template-side `cobo sync`, never from a local
 # `cobo dump` in a generated project (whose bytes `copier update` can never
 # reproduce). These legacy HFS resource-fork files are rarely committed.
+# Version manifest generated into each docs build by tools/build_docs.py from the
+# gh-pages branch listing (https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages); regenerated, never committed.
+docs/_static/versions.json
 # MegaLinter local report output (REPORT_OUTPUT_FOLDER in .mega-linter.yml)
 megalinter-reports/
 src/**/_version.py

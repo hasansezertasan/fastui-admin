@@ -106,6 +106,8 @@ Check particularly:
 - **Required status checks:** before deleting or renaming a workflow/job,
   inspect check names (including matrix names), aggregate gates, downstream
   references, and repository branch protection and rulesets.
+  Compare local `.github/settings.yml` / ruleset definitions with live settings when read
+  access is available. Local files alone do not prove the active requirements.
   If live requirements are unavailable, record that gap and defer removal or
   renaming of potentially required checks until the user supplies evidence.
 - **Project customizations:** preserve source behavior, meaningful tests,
@@ -169,6 +171,11 @@ These apply when the template was copied over an existing package:
   project's own files from the baseline commit; decide with the user which
   skeleton modules to keep (enabled components read `core/app.py`), and update
   the tests that import removed ones.
+- **Docs collide too.** An old MkDocs `docs/index.md` has the same docname as
+  the rendered `docs/index.rst`, and `docs/modules.rst` runs `automodule` on
+  the skeleton modules. Port the content into `.rst` and point `automodule` at
+  the real modules. Preserve custom `exclude_patterns` in `docs/conf.py` so
+  internal design notes stay excluded from the published site.
 - **Release state starts at zero.** `.github/release-please-manifest.json`
   renders as `0.0.0`; set it to the last published version, verified against
   the project's release history. A nearest git tag can belong to a draft or

@@ -117,6 +117,11 @@ hooks = [
   # with the `style` group. It reads `.editorconfig-checker.json` and scans the
   # whole tree (respecting .gitignore), so filenames are not passed.
   { id = "editorconfig-checker", name = "EditorConfig Checker", entry = "uv run --locked --group style ec", language = "system", pass_filenames = false },
+  # sphinx-lint is run via the uv `style` group (not an upstream prek repo) so its
+  # version has a single source of truth shared with the tox `style` env — the
+  # same drift-free rationale as editorconfig-checker above. It statically lints
+  # the reStructuredText docs sources (it does not import the project or Sphinx).
+  { id = "sphinx-lint", name = "Sphinx Lint", entry = "uv run --locked --group style sphinx-lint docs", language = "system", files = '\.rst$', pass_filenames = false },
   # detect-secrets is a local pre-commit gate against a committed baseline
   # (.secrets.baseline), catching a secret at `git commit` time before it ever
   # enters history. It complements (does not replace) the history-spanning

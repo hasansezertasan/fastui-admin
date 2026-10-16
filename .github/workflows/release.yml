@@ -263,6 +263,102 @@ jobs:
             gh pr close "$pr" --delete-branch --repo "$REPO"
           fi
           gh workflow run "$WORKFLOW" --ref "$REF_NAME" --repo "$REPO"
+  deploy-docs:
+    runs-on: ubuntu-latest
+    name: Deploy Docs
+    timeout-minutes: 15
+    # Deploy docs inline after the release is published. The `release: published`
+    # event that finalize-release emits cannot trigger a separate workflow,
+    # because events fired by the GITHUB_TOKEN do not start new workflow runs
+    # (the workflow_dispatch exception is why finalize-release re-dispatches
+    # itself above). So docs deployment must live in this workflow as a job.
+    needs: [release-please, finalize-release]
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    permissions:
+      contents: write  # IMPORTANT: Mandatory for GitHub Pages
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version-file: .python-version
+      - name: Setup uv
+        id: setup-uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
+            uv.lock
+      - name: Restore cache
+        if: steps.setup-uv.outputs.cache-hit == 'true'
+        run: echo "Cache was restored"
+      - name: Set reproducible build epoch
+        # Pin Sphinx's "today"/copyright to the last commit date so the same
+        # commit always renders the same docs output (reproducible-builds.org).
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+      - name: Fetch gh-pages branch
+        # build_docs.py preserves already-published versions from gh-pages; make
+        # the branch available locally (no-op on the very first release).
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # actions/checkout runs with `persist-credentials: false` (artipacked),
+        # so raw git has no credentials: on a PRIVATE repo an unauthenticated
+        # `ls-remote`/`fetch` fails outright. Pass the token per invocation via
+        # an in-memory http.extraheader — the same header actions/checkout uses
+        # internally — so nothing is written to .git/config for a later step (or
+        # an uploaded artifact) to pick up.
+        #
+        # `git fetch ... || echo` would swallow a transport error as if the branch
+        # were simply absent: build_docs.py would then assemble a site with no
+        # prior versions and the deploy below (clean, minus pr-preview/**) would
+        # DELETE every published version directory from gh-pages. ls-remote can
+        # tell the two apart — exit 2 is "no such ref", anything else is a real
+        # failure worth aborting on.
+        run: |
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+          set +e
+          git -c "http.https://github.com/.extraheader=$auth" \
+            ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1
+          rc=$?
+          set -e
+          if [ "$rc" -eq 0 ]; then
+            git -c "http.https://github.com/.extraheader=$auth" \
+              fetch origin gh-pages:gh-pages
+          elif [ "$rc" -eq 2 ]; then
+            echo "gh-pages does not exist yet — first release, nothing to preserve"
+          else
+            echo "::error::could not query origin for gh-pages (ls-remote exit $rc); refusing to continue and risk deleting published versions"
+            exit 1
+          fi
+      - name: Build versioned docs
+        env:
+          PYTHONUNBUFFERED: "1"
+          # Passed via env (not interpolated into run:) — read by the Python
+          # process, so no template-injection surface. See https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages / CLAUDE.md.
+          DOCS_BUILD_VERSION: ${{ needs.release-please.outputs.version }}
+        # Builds only this release's docs, then assembles ./site with every prior
+        # version copied from gh-pages, a `latest` alias, and a root redirect.
+        run: uv run --no-default-groups --group docs python tools/build_docs.py site
+      - name: Deploy to GitHub Pages
+        # Publishes the assembled ./site to gh-pages. The action does its own git
+        # auth from the token input (default github.token) without writing it to
+        # .git/config, so the checkout above keeps persist-credentials: false.
+        # sphinx.ext.githubpages emits .nojekyll so _static/ is served.
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f  # v4.8.0
+        with:
+          folder: site
+          # Preserve the PR preview tree (pr-preview/**) that docs-preview.yml
+          # maintains — the action's default clean: true would otherwise wipe it.
+          # The numeric version directories (e.g. 0.3/) are re-supplied in ./site
+          # each run, so clean is safe for them. Disable force-push so a
+          # concurrent preview deploy is not clobbered. See https://hasansezertasan.github.io/copier-pyproject/context/docs-stack/#pr-docs-previews-deploy-to-a-subfolder-of-the-projects-own-gh-pages-same-repo-only, https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages.
+          clean-exclude: pr-preview/**
+          force: false
   notify-released-issues:
     runs-on: ubuntu-latest
     name: Notify released issues

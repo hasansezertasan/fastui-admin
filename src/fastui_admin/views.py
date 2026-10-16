@@ -142,12 +142,12 @@ class BaseModelView(BaseView):
     Only integer primary keys are currently supported.
 
     Usage:
-        ```python
-        class UserAdmin(BaseModelView, model=User):
-            name = "Users"
-            column_list = ["id", "username", "email"]
-            page_size = 25
-        ```
+        .. code-block:: python
+
+            class UserAdmin(BaseModelView, model=User):
+                name = "Users"
+                column_list = ["id", "username", "email"]
+                page_size = 25
     """
 
     # Model configuration (set via __init_subclass__)

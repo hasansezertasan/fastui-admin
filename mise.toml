@@ -44,6 +44,18 @@ description = "Format the code with ruff"
 alias = "f"
 run = "uv run --locked ruff format"
 
+[tasks.docs-build]
+description = "Build documentation"
+run = "uv run --locked tox run -e docs-build"
+
+[tasks.docs-serve]
+description = "Serve documentation locally"
+run = "uv run --locked tox run -e docs-server"
+
+[tasks.docs-doctest]
+description = "Run documentation doctests"
+run = "uv run --locked tox run -e docs-doctest"
+
 
 [tasks.prek]
 description = "Run prek hooks"

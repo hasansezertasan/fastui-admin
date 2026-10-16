@@ -4,6 +4,7 @@ Thanks for using fastui_admin! Here is where to get help.
 
 ## Questions and usage help
 
+- Read the [documentation](https://hasansezertasan.github.io/fastui-admin).
 - Search the [existing issues](https://github.com/hasansezertasan/fastui-admin/issues) —
   your question may already be answered.
 - Ask open-ended questions in
