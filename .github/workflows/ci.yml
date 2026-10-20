@@ -242,8 +242,8 @@ jobs:
         if: steps.setup-uv.outputs.cache-hit == 'true'
         run: echo "Cache was restored"
       - name: Run the tests
-        # `matrix.tox_args` selects the interpreter sweep (#159); the posargs
-        # after `--` select this component's marked tests (issue #160).
+        # `matrix.tox_args` selects the interpreter sweep; the posargs
+        # after `--` select this component's marked tests.
         # `matrix.tox_args` is a workflow-defined (trusted) context, used inline
         # like `matrix.os` in the System Info step — not untrusted GitHub context.
         run: uv run --locked tox run ${{ matrix.tox_args }}
@@ -255,7 +255,7 @@ jobs:
         # enforces the scoped `fail_under` gate. The per-cell `coverage report`
         # here stays for fast feedback but does NOT gate (`--fail-under=0`): a
         # line covered on one OS yet version/OS-gated off on another only
-        # balances in the per-component union. See https://hasansezertasan.github.io/copier-pyproject/context/ci-topology/#per-component-markers-path-filtered-jobs-and-one-coverage-gate-per-component (decomposes https://hasansezertasan.github.io/copier-pyproject/context/ci-topology/#a-single-union-coverage-gate-across-the-whole-matrix).
+        # balances in the per-component union.
         run: |
           uv run coverage combine
           uv run coverage report --show-missing --fail-under=0
@@ -369,14 +369,14 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Note skipped coverage upload
         if: ${{ env.CODECOV_TOKEN_SET != 'true' && env.REPO_IS_PUBLIC != 'true' }}
-        run: echo "::notice::CODECOV_TOKEN secret is not set and this repo is private — skipping the Codecov upload. See docs/maintaining/setup.rst (Repository setup) to enable coverage reporting."
+        run: echo "::notice::CODECOV_TOKEN secret is not set and this repo is private — skipping the Codecov upload. See REPOSITORY_SETUP.rst (Repository setup) to enable coverage reporting."
       - name: Publish coverage HTML (public repos)
         # smokeshow uploads htmlcov to an ephemeral public URL and prints it — no
         # account or secret required (an optional key only raises rate limits).
         # Public repos only: a private report must not be published. Best-effort
         # and ordered LAST — a tokenless rate-limit or outage must never fail the
         # `check` gate nor block the authoritative Codecov/coverage.xml uploads
-        # above; smokeshow is a supplementary mirror, not load-bearing. See https://hasansezertasan.github.io/copier-pyproject/context/ci-topology/#a-tokenless-public-html-coverage-mirror-via-smokeshow.
+        # above; smokeshow is a supplementary mirror, not load-bearing.
         if: ${{ env.REPO_IS_PUBLIC == 'true' }}
         continue-on-error: true
         run: uv run --no-project --with smokeshow smokeshow upload htmlcov
