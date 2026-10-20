@@ -3,7 +3,7 @@
 Only the *current* release is built here; every previously published version is
 copied across from the ``gh-pages`` branch untouched — old versions are never
 rebuilt. The version list is derived from the ``gh-pages`` directory listing, so
-there is no committed ``versions.json`` to maintain. See https://hasansezertasan.github.io/copier-pyproject/context/docs-versioning/#docs-publish-only-the-current-version-and-carry-older-built-versions-forward-from-gh-pages.
+there is no committed ``versions.json`` to maintain.
 
 Usage::
 
@@ -27,8 +27,8 @@ from pathlib import Path
 
 from packaging.version import InvalidVersion, Version
 
-# Version-directory granularity, baked from the Copier ``docs_version_granularity``
-# answer. Edit here only if you want to change how release versions map to docs
+# Version-directory granularity, chosen when the project was created.
+# Edit here only if you want to change how release versions map to docs
 # directories: "minor" -> X.Y, "major" -> X, "full" -> X.Y.Z.
 DEFAULT_VERSION_GRANULARITY = "minor"
 
