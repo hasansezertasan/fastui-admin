@@ -14,7 +14,7 @@ Then visit:
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, ClassVar
 
 from fastapi import FastAPI
@@ -44,7 +44,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(100))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime, default=lambda: datetime.now(UTC)
     )
 
     posts: Mapped[list[Post]] = relationship(back_populates="author")
@@ -61,7 +61,7 @@ class Post(Base):
     published: Mapped[bool] = mapped_column(Boolean, default=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     created_at: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime, default=lambda: datetime.now(UTC)
     )
 
     author: Mapped[User] = relationship(back_populates="posts")

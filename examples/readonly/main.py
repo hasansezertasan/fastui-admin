@@ -14,7 +14,7 @@ Then visit:
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, ClassVar
 
 from fastapi import FastAPI
@@ -44,7 +44,7 @@ class AuditLog(Base):
     user: Mapped[str] = mapped_column(String(100))
     detail: Mapped[str] = mapped_column(String(500))
     timestamp: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(timezone.utc)
+        DateTime, default=lambda: datetime.now(UTC)
     )
 
 
