@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/hasansezertasan/fastui-admin/compare/v0.2.0...v0.3.0) (2026-10-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop Python 3.10 support ([#75](https://github.com/hasansezertasan/fastui-admin/issues/75))
+
+### 🔧 Chores
+
+* drop Python 3.10 support ([#75](https://github.com/hasansezertasan/fastui-admin/issues/75)) ([2a18d71](https://github.com/hasansezertasan/fastui-admin/commit/2a18d71aa886c2c1154fa0bd03c4c25292a9ee32))
+
 ## [0.2.0](https://github.com/hasansezertasan/fastui-admin/compare/v0.1.0...v0.2.0) (2026-10-18)
 
 
