@@ -291,9 +291,13 @@ settings and release steps in the same file.
 
 ## Credits
 
+<<<<<<< before updating
 Vibe coded by [Claude Opus 4.5](https://claude.ai), reviewed and tested by [@hasansezertasan](https://github.com/hasansezertasan).
 
 This package was created with [Copier](https://github.com/copier-org/copier) and the [hasansezertasan/copier-pyproject](https://github.com/hasansezertasan/copier-pyproject) project template.
+=======
+Generated from [copier-pyproject](https://github.com/hasansezertasan/copier-pyproject).
+>>>>>>> after updating
 
 ## License :scroll:
 
