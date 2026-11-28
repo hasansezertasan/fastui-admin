@@ -64,8 +64,8 @@ source = "https://github.com/hasansezertasan/fastui-admin.git"
 
 [dependency-groups]
 dev = [
-  "tox==4.65.0",
-  "tox-uv==1.36.1",
+  "tox==4.67.17",
+  "tox-uv==1.37.10",
   "debugpy==1.8.22",
   { include-group = "style" },
   { include-group = "test" },
@@ -97,7 +97,7 @@ deps = [
 ]
 test = [
   "coverage-enable-subprocess==1.0",
-  "coverage[toml]==7.16.2",
+  "coverage[toml]==7.17.5",
   "pytest-mock==3.17.0",
   "pytest-rerunfailures==16.7",
   "pytest-xdist[psutil]==3.8.0",
@@ -112,11 +112,11 @@ test = [
   "httpx==0.28.1",
 ]
 docs = [
-  "sphinx==8.1.3",
+  "sphinx==8.3.0",
   "shibuya==2026.7.12",
   "sphinx-autobuild==2025.8.25",
   "sphinx-copybutton==0.5.2",
-  "sphinx-design==0.7.0",
+  "sphinx-design==0.8.0",
   "sphinx-togglebutton==0.4.5",
   "sphinx-paramlinks==0.6.0",
   "auto-pytabs[sphinx]==0.5.0",
